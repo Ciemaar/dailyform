@@ -1,14 +1,13 @@
-from datetime import date
+import json
 import os
 import shelve
 import urllib2
-import json
-from collections import MutableMapping, Mapping
-import mako
-import requests
-from toodledo import get_todos
+from collections import Mapping
+from datetime import date
 
-from util import *
+import mako
+
+from toodledo import get_todos
 
 NEW = 10
 PARTIAL_PREP = 20
@@ -61,7 +60,8 @@ class BaseForm(Mapping):
 
     def __getitem__(self, key):
         """BaseForm can be used as a dictionary, in which case it will search all three internal dicts"""
-        return self.formatted_strings.get(key, self.analysis.get(key, self.facts.get(key, self.defaults.get(key,None))))
+        return self.formatted_strings.get(key,
+                                          self.analysis.get(key, self.facts.get(key, self.defaults.get(key, None))))
 
     def __iter__(self):
         for key in set(self.formatted_strings.keys() + self.analysis.keys() + self.facts.keys() + self.defaults.keys()):
@@ -83,16 +83,19 @@ class PlaceForm(BaseForm):
     def prepare(self, partial=False):
         self.getPlaceInfo()  # will insert zip_code in facts
         super(PlaceForm, self).prepare(partial)
+
     def getPlaceInfo(self):
-        #self.facts['zip_code'] = ""
+        # self.facts['zip_code'] = ""
         pass
+
 
 class UserForm(BaseForm):
     def prepare(self, partial=False):
         self.getUserInfo()  # will insert username in facts
         super(UserForm, self).prepare(partial)
+
     def getUserInfo(self):
-        #self.facts['username'] = ""
+        # self.facts['username'] = ""
         pass
 
 
@@ -115,7 +118,7 @@ class WeatherMixin(PlaceForm):
         self.facts['weather'] = {}
         for forecast in parsed_json['forecast']['simpleforecast']['forecastday']:
             self.facts['weather'][date(day=forecast['date']['day'], month=forecast['date']['month'],
-                year=forecast['date']['year'])] = forecast
+                                       year=forecast['date']['year'])] = forecast
         f.close()
         super(WeatherMixin, self).prepare(partial)
 
@@ -123,7 +126,7 @@ class WeatherMixin(PlaceForm):
         today = self.facts.get('weather', {}).get(date.today(), None)
         if today:
             self.formatted_strings['weather'] = "{low} degrees F {conditions}".format(low=today['low']['fahrenheit'],
-                conditions=today['conditions'])
+                                                                                      conditions=today['conditions'])
         super(WeatherMixin, self).format()
 
 
@@ -203,7 +206,7 @@ class TextForm(BaseForm):
         return ret
 
 
-class DailyForm(TextForm, WeatherMixin, TodoMixin, SimpleUserPlaceMixin):#, PersistFactsMixin):
+class DailyForm(TextForm, WeatherMixin, TodoMixin, SimpleUserPlaceMixin):  # , PersistFactsMixin):
     def __init__(self, form_id, form_date=None):
         template = """
     {form_type} for {form_id}
@@ -212,9 +215,10 @@ class DailyForm(TextForm, WeatherMixin, TodoMixin, SimpleUserPlaceMixin):#, Pers
     {todo}
     """
         super(DailyForm, self).__init__(form_type=self.__class__.__name__,
-            form_id=form_id,
-            form_date=form_date,
-            template=template)
+                                        form_id=form_id,
+                                        form_date=form_date,
+                                        template=template)
+
 
 if __name__ == '__main__':
     if os.path.exists("oldfacts.db"):
@@ -233,7 +237,7 @@ if __name__ == '__main__':
     dt.prepare()
     print dt.render_text()
     del dt
-    
+
     dt = DailyForm("Andy")
     dt.prepare()
     dt.prepare()
