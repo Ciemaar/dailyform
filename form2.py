@@ -1,3 +1,4 @@
+import os
 from collections import Mapping
 from datetime import date
 
@@ -22,7 +23,9 @@ class BaseForm(Mapping):
         self.analysis = {}
         self.formatted_strings = {}
         self.errors = {}
+        self.failures = {}
         self.defaults = {}
+
 
     def prepare(self, partial=False):
         if partial:
@@ -65,7 +68,7 @@ class BaseForm(Mapping):
 
     def __iter__(self):
         for key in set(self.formatted_strings.keys() + self.analysis.keys() + self.facts.keys()):
-            yield self[key]
+            yield key
 
 
 class WeatherMixin(BaseForm):
@@ -74,7 +77,7 @@ class WeatherMixin(BaseForm):
         self.defaults['weather'] = 'Partly Cloudy'
 
     def prepare(self, partial=False):
-        if getattr(self, 'fail_weather'):
+        if getattr(self, 'fail_weather',None):
             self.failures['weather'] = 'Forced Failure on weather'
             super(WeatherMixin, self).prepare(partial=True)
         self.facts['weather'] = 'Partly Sunny'
@@ -87,7 +90,7 @@ class TodoMixin(BaseForm):
         self.defaults['todos'] = ['Revise todo list']
 
     def prepare(self, partial=False):
-        if getattr(self, 'fail_todo'):
+        if getattr(self, 'fail_todo',False):
             self.failures['todos'] = 'Forced Failure on todos'
             super(TodoMixin, self).prepare(partial=True)
         self.facts['todos'] = ['teach class', 'prepare class']
@@ -115,7 +118,7 @@ class TextForm(BaseForm):
     def render_text(self):
         if not self.isFormatted:
             self.format()
-        ret = self.template.format(self)
+        ret = self.template.format(**self)
         self.state = RENDERED
         return ret
 
@@ -132,3 +135,34 @@ class DailyForm(TextForm, WeatherMixin, TodoMixin):
         if form_date is None:
             form_date = date.today()
         super(DailyForm, self).__init__(self.__class__.__name__, form_id, form_date, self.template)
+
+if __name__ == '__main__':
+    if os.path.exists("oldfacts.db"):
+        os.remove("oldfacts.db")
+
+    dt = DailyForm("Andy")
+    dt.fail_weather = True
+    dt.prepare()
+    dt.prepare()
+    print dt.render_text()
+    del dt
+
+    dt = DailyForm("Andy")
+    dt.facts["zip_code"] = "10001"
+    dt.prepare()
+    dt.prepare()
+    print dt.render_text()
+    del dt
+
+    dt = DailyForm("Andy")
+    dt.prepare()
+    dt.prepare()
+    print dt.render_text()
+    del dt
+
+    dt = DailyForm("Andy")
+    dt.fail_weather = True
+    dt.prepare()
+    dt.prepare()
+    print dt.render_text()
+    del dt

@@ -7,6 +7,7 @@ from datetime import date
 
 import mako
 
+from secrets import WU_API_KEY
 from toodledo import get_todos
 
 NEW = 10
@@ -112,7 +113,7 @@ class WeatherMixin(PlaceForm):
             return super(WeatherMixin, self).prepare(True)
 
         f = urllib2.urlopen(
-            'http://api.wunderground.com/api/3937ebdc37ddd735/geolookup/forecast10day/q/{zip_code}.json'.format(**self))
+            'http://api.wunderground.com/api/{API_KEY}/geolookup/forecast10day/q/{zip_code}.json'.format(API_KEY=WU_API_KEY, **self))
         json_string = f.read()
         parsed_json = json.loads(json_string)
         self.facts['weather'] = {}
