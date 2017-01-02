@@ -24,12 +24,13 @@ class BaseForm(Mapping):
         self.form_type = form_type
         self.form_id = form_id
         self.form_date = form_date
-        self.facts = dict(self.__dict__)
+        self.facts = dict(self.__dict__)  ## facts include form date, type, and id
         self.state = NEW
         self.analysis = {}
         self.formatted_strings = {}
         self.errors = {}
         self.defaults = {}
+
 
     def prepare(self, partial=False):
         if partial:
@@ -38,9 +39,13 @@ class BaseForm(Mapping):
             self.state = PREPARED
 
     def analyze(self):
+        if not self.isPrepared:
+            self.prepare()
         self.state = ANALYZED
 
     def format(self):
+        if not self.isAnalyzed:
+            self.analyze
         self.state = FORMATTED
 
     @property
@@ -157,7 +162,7 @@ class TodoMixin(UserForm):
 
 class SimpleUserPlaceMixin(UserForm, PlaceForm):
     def getPlaceInfo(self):
-        self.facts['zip_code'] = "07307"
+        self.facts['zip_code'] = "10001"
 
     def getUserInfo(self):
         self.facts['username'] = "Andy"

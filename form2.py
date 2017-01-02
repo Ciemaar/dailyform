@@ -63,13 +63,12 @@ class BaseForm(Mapping):
         """BaseForm can be used as a dictionary, in which case it will search all three internal dicts"""
         return self.formatted_strings.get(key, self.analysis.get(key, self.facts[key]))
 
-    def __len__(self):
-        return len(set(self.formatted_strings.keys() + self.analysis.keys() + self.facts.keys()))
-
     def __iter__(self):
         for key in set(self.formatted_strings.keys() + self.analysis.keys() + self.facts.keys()):
             yield key
 
+    def __len__(self):
+        return len(set(self.formatted_strings.keys() + self.analysis.keys() + self.facts.keys()))
 
 class WeatherMixin(BaseForm):
     def __init__(self, *args, **kwargs):
@@ -125,7 +124,7 @@ class TextForm(BaseForm):
 
 class DailyForm(TextForm, WeatherMixin, TodoMixin):
     template = """
-  {form_type}  for {form_id}
+  {form_type} for {form_id}
   =================================
   Today's Weather:  {weather}
   Your Todo's:  {todos}
