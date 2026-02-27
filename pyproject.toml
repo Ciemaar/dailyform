@@ -33,3 +33,15 @@ select = ["E", "F", "I"]
 [tool.pyright]
 include = ["src"]
 typeCheckingMode = "basic"
+
+[project.optional-dependencies]
+dev = [
+    "pytest",
+    "ruff",
+    "pyright",
+    "tox",
+    "mdformat",
+]
+
+[tool.mdformat]
+wrap = 80

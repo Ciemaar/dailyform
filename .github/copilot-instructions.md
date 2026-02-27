@@ -21,8 +21,8 @@
 
 ## Development
 
-1.  **Install:** `pip install -e .`
-2.  **Test:** `pytest tests/`
-3.  **Lint:** `ruff check .`
-4.  **Format:** `ruff format .`
-5.  **Type Check:** `pyright .`
+1. **Install:** `pip install -e .`
+1. **Test:** `pytest tests/`
+1. **Lint:** `ruff check .`
+1. **Format:** `ruff format .`
+1. **Type Check:** `pyright .`
