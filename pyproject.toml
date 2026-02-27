@@ -1,0 +1,35 @@
+[build-system]
+requires = ["setuptools>=61.0", "wheel"]
+build-backend = "setuptools.build_meta"
+
+[project]
+name = "dailyform"
+version = "0.0.1"
+description = "A rough start at a system for printing a personal, daily checklist."
+readme = "README.md"
+authors = [
+    {name = "Andy Fundinger", email = "Andy@ciemaar.com"},
+]
+license = {text = "Pending"}
+requires-python = ">=3.13"
+dependencies = [
+    "requests",
+    "mako",
+]
+
+[project.urls]
+"Homepage" = "https://channel3b.wordpress.com/dailyform/"
+
+[tool.setuptools.packages.find]
+where = ["src"]
+
+[tool.ruff]
+line-length = 120
+target-version = "py313"
+
+[tool.ruff.lint]
+select = ["E", "F", "I"]
+
+[tool.pyright]
+include = ["src"]
+typeCheckingMode = "basic"

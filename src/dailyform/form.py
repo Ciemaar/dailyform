@@ -1,14 +1,14 @@
 import json
 import os
 import shelve
-import urllib2
-from collections import Mapping
+import urllib.request
+from collections.abc import Mapping
 from datetime import date
 
-import mako
+from mako.template import Template
 
-from secrets import WU_API_KEY
-from toodledo import get_todos
+from .secrets import WU_API_KEY
+from .toodledo import get_todos
 
 NEW = 10
 PARTIAL_PREP = 20
@@ -30,7 +30,6 @@ class BaseForm(Mapping):
         self.formatted_strings = {}
         self.errors = {}
         self.defaults = {}
-
 
     def prepare(self, partial=False):
         if partial:
@@ -66,15 +65,28 @@ class BaseForm(Mapping):
 
     def __getitem__(self, key):
         """BaseForm can be used as a dictionary, in which case it will search all three internal dicts"""
-        return self.formatted_strings.get(key,
-                                          self.analysis.get(key, self.facts.get(key, self.defaults.get(key, None))))
+        return self.formatted_strings.get(
+            key, self.analysis.get(key, self.facts.get(key, self.defaults.get(key, None)))
+        )
 
     def __iter__(self):
-        for key in set(self.formatted_strings.keys() + self.analysis.keys() + self.facts.keys() + self.defaults.keys()):
+        for key in set(
+            list(self.formatted_strings.keys())
+            + list(self.analysis.keys())
+            + list(self.facts.keys())
+            + list(self.defaults.keys())
+        ):
             yield key
 
     def __len__(self):
-        return len(set(self.formatted_strings.keys() + self.analysis.keys() + self.facts.keys() + self.defaults.keys()))
+        return len(
+            set(
+                list(self.formatted_strings.keys())
+                + list(self.analysis.keys())
+                + list(self.facts.keys())
+                + list(self.defaults.keys())
+            )
+        )
 
     def __call__(self):
         if not self.isPrepared:
@@ -108,38 +120,45 @@ class UserForm(BaseForm):
 class WeatherMixin(PlaceForm):
     def __init__(self, *args, **kwargs):
         super(WeatherMixin, self).__init__(*args, **kwargs)
-        self.defaults['weather'] = "No weather"
+        self.defaults["weather"] = "No weather"
+        self.fail_weather = False
 
     def prepare(self, partial=False):
         if "zip_code" not in self.facts:
             return super(WeatherMixin, self).prepare(True)
-        if getattr(self, 'fail_weather', False):
-            self.errors['weather'] = "Unable to retrieve"
+        if getattr(self, "fail_weather", False):
+            self.errors["weather"] = "Unable to retrieve"
             return super(WeatherMixin, self).prepare(True)
 
-        f = urllib2.urlopen(
-            'http://api.wunderground.com/api/{API_KEY}/geolookup/forecast10day/q/{zip_code}.json'.format(API_KEY=WU_API_KEY, **self))
+        f = urllib.request.urlopen(
+            "http://api.wunderground.com/api/{API_KEY}/geolookup/forecast10day/q/{zip_code}.json".format(
+                API_KEY=WU_API_KEY, **self
+            )
+        )
         json_string = f.read()
         parsed_json = json.loads(json_string)
-        self.facts['weather'] = {}
-        for forecast in parsed_json['forecast']['simpleforecast']['forecastday']:
-            self.facts['weather'][date(day=forecast['date']['day'], month=forecast['date']['month'],
-                                       year=forecast['date']['year'])] = forecast
+        self.facts["weather"] = {}
+        for forecast in parsed_json["forecast"]["simpleforecast"]["forecastday"]:
+            self.facts["weather"][
+                date(day=forecast["date"]["day"], month=forecast["date"]["month"], year=forecast["date"]["year"])
+            ] = forecast
         f.close()
         super(WeatherMixin, self).prepare(partial)
 
     def format(self):
-        today = self.facts.get('weather', {}).get(date.today(), None)
+        today = self.facts.get("weather", {}).get(date.today(), None)
         if today:
-            self.formatted_strings['weather'] = "{low} degrees F {conditions}".format(low=today['low']['fahrenheit'],
-                                                                                      conditions=today['conditions'])
+            self.formatted_strings["weather"] = "{low} degrees F {conditions}".format(
+                low=today["low"]["fahrenheit"], conditions=today["conditions"]
+            )
         super(WeatherMixin, self).format()
 
 
 class TodoMixin(UserForm):
     def __init__(self, *args, **kwargs):
         super(TodoMixin, self).__init__(*args, **kwargs)
-        self.defaults['todo'] = "No todo"
+        self.defaults["todo"] = "No todo"
+        self.fail_todo = False
 
     def prepare(self, partial=False):
         """
@@ -149,29 +168,29 @@ class TodoMixin(UserForm):
         """
         if "username" not in self.facts:
             return super(TodoMixin, self).prepare(True)
-        if getattr(self, 'fail_todo', False):
-            self.errors['todo'] = "Unable to retrieve"
-        self.facts['todo'] = get_todos()
+        if getattr(self, "fail_todo", False):
+            self.errors["todo"] = "Unable to retrieve"
+        self.facts["todo"] = get_todos()
         super(TodoMixin, self).prepare(partial)
 
     def format(self):
-        todos = self.facts.get('todo', [])
-        self.formatted_strings['todo'] = "\n".join(x['title'] for x in todos if 'title' in x)
+        todos = self.facts.get("todo", [])
+        self.formatted_strings["todo"] = "\n".join(x["title"] for x in todos if "title" in x)
         super(TodoMixin, self).format()
 
 
 class SimpleUserPlaceMixin(UserForm, PlaceForm):
     def getPlaceInfo(self):
-        self.facts['zip_code'] = "10001"
+        self.facts["zip_code"] = "10001"
 
     def getUserInfo(self):
-        self.facts['username'] = "Andy"
+        self.facts["username"] = "Andy"
 
 
 class PersistFactsMixin(BaseForm):
     def __init__(self, *args, **kwargs):
         super(PersistFactsMixin, self).__init__(*args, **kwargs)
-        self.shelf = shelve.open('oldfacts.db')
+        self.shelf = shelve.open("oldfacts.db")
         self.shelf_key = repr((self.form_type, self.form_id))
 
     def __del__(self):
@@ -188,8 +207,8 @@ class PersistFactsMixin(BaseForm):
 
 class MakoForm(BaseForm):
     def __init__(self, form_type, form_id, form_date, filename):
-        super(MakoForm, self, form_type, form_id, form_date).__init__()
-        self.template = mako.template.Template(filename)
+        super(MakoForm, self).__init__(form_type, form_id, form_date)
+        self.template = Template(filename)
 
     def render_html(self):
         if not self.isFormatted:
@@ -220,13 +239,12 @@ class DailyForm(TextForm, WeatherMixin, TodoMixin, SimpleUserPlaceMixin):  # , P
     {weather}
     {todo}
     """
-        super(DailyForm, self).__init__(form_type=self.__class__.__name__,
-                                        form_id=form_id,
-                                        form_date=form_date,
-                                        template=template)
+        super(DailyForm, self).__init__(
+            form_type=self.__class__.__name__, form_id=form_id, form_date=form_date, template=template
+        )
 
 
-if __name__ == '__main__':
+if __name__ == "__main__":
     if os.path.exists("oldfacts.db"):
         os.remove("oldfacts.db")
 
@@ -234,25 +252,25 @@ if __name__ == '__main__':
     dt.fail_weather = True
     dt.prepare()
     dt.prepare()
-    print dt.render_text()
+    print(dt.render_text())
     del dt
 
     dt = DailyForm("Andy")
     dt.facts["zip_code"] = "10001"
     dt.prepare()
     dt.prepare()
-    print dt.render_text()
+    print(dt.render_text())
     del dt
 
     dt = DailyForm("Andy")
     dt.prepare()
     dt.prepare()
-    print dt.render_text()
+    print(dt.render_text())
     del dt
 
     dt = DailyForm("Andy")
     dt.fail_weather = True
     dt.prepare()
     dt.prepare()
-    print dt.render_text()
+    print(dt.render_text())
     del dt

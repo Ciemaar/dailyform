@@ -1,8 +1,8 @@
 import os
-from collections import Mapping
+from collections.abc import Mapping
 from datetime import date
 
-import mako
+from mako.template import Template
 
 NEW = 10
 PARTIAL_PREP = 20
@@ -25,7 +25,6 @@ class BaseForm(Mapping):
         self.errors = {}
         self.failures = {}
         self.defaults = {}
-
 
     def prepare(self, partial=False):
         if partial:
@@ -64,42 +63,45 @@ class BaseForm(Mapping):
         return self.formatted_strings.get(key, self.analysis.get(key, self.facts[key]))
 
     def __iter__(self):
-        for key in set(self.formatted_strings.keys() + self.analysis.keys() + self.facts.keys()):
+        for key in set(list(self.formatted_strings.keys()) + list(self.analysis.keys()) + list(self.facts.keys())):
             yield key
 
     def __len__(self):
-        return len(set(self.formatted_strings.keys() + self.analysis.keys() + self.facts.keys()))
+        return len(set(list(self.formatted_strings.keys()) + list(self.analysis.keys()) + list(self.facts.keys())))
+
 
 class WeatherMixin(BaseForm):
     def __init__(self, *args, **kwargs):
         super(WeatherMixin, self).__init__(*args, **kwargs)
-        self.defaults['weather'] = 'Partly Cloudy'
+        self.defaults["weather"] = "Partly Cloudy"
+        self.fail_weather = False
 
     def prepare(self, partial=False):
-        if getattr(self, 'fail_weather',None):
-            self.failures['weather'] = 'Forced Failure on weather'
+        if getattr(self, "fail_weather", None):
+            self.failures["weather"] = "Forced Failure on weather"
             super(WeatherMixin, self).prepare(partial=True)
-        self.facts['weather'] = 'Partly Sunny'
+        self.facts["weather"] = "Partly Sunny"
         super(WeatherMixin, self).prepare(partial)
 
 
 class TodoMixin(BaseForm):
     def __init__(self, *args, **kwargs):
         super(TodoMixin, self).__init__(*args, **kwargs)
-        self.defaults['todos'] = ['Revise todo list']
+        self.defaults["todos"] = ["Revise todo list"]
+        self.fail_todo = False
 
     def prepare(self, partial=False):
-        if getattr(self, 'fail_todo',False):
-            self.failures['todos'] = 'Forced Failure on todos'
+        if getattr(self, "fail_todo", False):
+            self.failures["todos"] = "Forced Failure on todos"
             super(TodoMixin, self).prepare(partial=True)
-        self.facts['todos'] = ['teach class', 'prepare class']
+        self.facts["todos"] = ["teach class", "prepare class"]
         super(TodoMixin, self).prepare(partial)
 
 
 class MakoForm(BaseForm):
     def __init__(self, form_type, form_id, form_date, filename):
-        super(MakoForm, self, form_type, form_id, form_date).__init__()
-        self.template = mako.template.Template(filename)
+        super(MakoForm, self).__init__(form_type, form_id, form_date)
+        self.template = Template(filename)
 
     def render_html(self):
         if not self.isFormatted:
@@ -135,7 +137,8 @@ class DailyForm(TextForm, WeatherMixin, TodoMixin):
             form_date = date.today()
         super(DailyForm, self).__init__(self.__class__.__name__, form_id, form_date, self.template)
 
-if __name__ == '__main__':
+
+if __name__ == "__main__":
     if os.path.exists("oldfacts.db"):
         os.remove("oldfacts.db")
 
@@ -143,25 +146,25 @@ if __name__ == '__main__':
     dt.fail_weather = True
     dt.prepare()
     dt.prepare()
-    print dt.render_text()
+    print(dt.render_text())
     del dt
 
     dt = DailyForm("Andy")
     dt.facts["zip_code"] = "10001"
     dt.prepare()
     dt.prepare()
-    print dt.render_text()
+    print(dt.render_text())
     del dt
 
     dt = DailyForm("Andy")
     dt.prepare()
     dt.prepare()
-    print dt.render_text()
+    print(dt.render_text())
     del dt
 
     dt = DailyForm("Andy")
     dt.fail_weather = True
     dt.prepare()
     dt.prepare()
-    print dt.render_text()
+    print(dt.render_text())
     del dt
