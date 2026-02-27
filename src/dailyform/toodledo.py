@@ -18,7 +18,8 @@ session = {"appid": appid}
 
 
 def make_sig(keyvalue):
-    return hashlib.md5((keyvalue + apptoken).encode("utf-8")).hexdigest()
+    # MD5 is required by Toodledo API v2 for authentication signatures
+    return hashlib.md5((keyvalue + apptoken).encode("utf-8"), usedforsecurity=False).hexdigest()
 
 
 def auth_request(url, *otherfields, **kwfields):
@@ -37,8 +38,12 @@ print(session)
 
 pickle.dump(session, open("session.pkl", "wb"))
 
+# MD5 is required by Toodledo API v2 for authentication key generation
 key = hashlib.md5(
-    (hashlib.md5(userpw.encode("utf-8")).hexdigest() + apptoken + session["token"]).encode("utf-8")
+    (hashlib.md5(userpw.encode("utf-8"), usedforsecurity=False).hexdigest() + apptoken + session["token"]).encode(
+        "utf-8"
+    ),
+    usedforsecurity=False,
 ).hexdigest()
 session = {"key": key}
 

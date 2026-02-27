@@ -21,7 +21,7 @@ mock_config.get.return_value = "mock_value"
 sys.modules["configparser"] = MagicMock()
 sys.modules["configparser"].ConfigParser.return_value = mock_config
 
-from dailyform import toodledo
+from dailyform import toodledo  # noqa: E402
 
 
 class TestToodledo(unittest.TestCase):

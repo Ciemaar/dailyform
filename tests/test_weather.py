@@ -33,7 +33,7 @@ sys.modules["urllib"] = mock_urllib
 sys.modules["urllib.request"] = mock_urllib_request
 
 # Import the module under test
-from dailyform import weather
+from dailyform import weather  # noqa: E402
 
 
 class TestWeather(unittest.TestCase):

@@ -19,7 +19,7 @@ mock_toodledo = MagicMock()
 mock_toodledo.get_todos.return_value = [{"title": "Mock Todo"}]
 sys.modules["dailyform.toodledo"] = mock_toodledo
 
-from dailyform.form import DailyForm
+from dailyform.form import DailyForm  # noqa: E402
 
 
 class TestDailyForm(unittest.TestCase):
