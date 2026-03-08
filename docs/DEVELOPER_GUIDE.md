@@ -87,11 +87,17 @@ mdformat --check .
 
 ## Legacy API Constraints
 
+### Legacy API Endpoints
+
+⚠️ **Warning: The APIs this codebase targets are largely defunct.** ⚠️
+
+As part of modernizing this codebase, it is highly recommended to replace the API integration layers (`toodledo.py` and `weather.py`) with modern alternatives (e.g., OpenWeatherMap, Todoist, or Toodledo v3). The current implementations exist primarily as a historical migration reference.
+
 ### Toodledo API v2 & MD5
 
-The `toodledo.py` module interacts with an older version of the Toodledo API which strictly requires the use of the **MD5** hashing algorithm for generating authentication signatures and keys.
+The `toodledo.py` module interacts with an older, deprecated version of the Toodledo API (v2) which strictly required the use of the **MD5** hashing algorithm for generating authentication signatures and keys.
 
-Because MD5 is considered cryptographically insecure, security linters (like Bandit or Codacy) will flag its usage. To address this while maintaining compatibility with the API, we use `usedforsecurity=False` in the `hashlib.md5()` calls:
+Because MD5 is considered cryptographically insecure, security linters (like Bandit or Codacy) flag its usage. To address this while maintaining structural compatibility with the legacy API, we use `usedforsecurity=False` in the `hashlib.md5()` calls:
 
 ```python
 hashlib.md5(..., usedforsecurity=False)
