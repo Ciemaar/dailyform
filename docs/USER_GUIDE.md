@@ -18,25 +18,14 @@ pip install .
 
 DailyForm requires access to a couple of external APIs: OpenWeatherMap and Toodledo API v3. You must provide your API credentials for these services to work.
 
-### 1. Toodledo Configuration
-
-Create a file named `dailyform.cfg` in the directory from which you will run DailyForm. It must have the following structure:
+Create a `.env` file in the root directory from which you will run DailyForm with your API credentials:
 
 ```ini
-[toodledo]
-access_token = YOUR_TOODLEDO_API_V3_ACCESS_TOKEN
+TOODLEDO_ACCESS_TOKEN=YOUR_TOODLEDO_API_V3_ACCESS_TOKEN
+OWM_API_KEY=YOUR_OPENWEATHERMAP_API_KEY
 ```
 
-*Note: The Toodledo API v3 requires an OAuth2 access token. You can obtain one by registering an application in your Toodledo developer console.*
-
-### 2. OpenWeatherMap API Key
-
-Create a file named `secrets.py` inside the `src/dailyform/` directory (or ensure it's accessible in your Python path under the `dailyform` package) with your API key:
-
-```python
-# src/dailyform/secrets.py
-OWM_API_KEY = "YOUR_OPENWEATHERMAP_API_KEY"
-```
+*Note: You can also export these directly as environment variables. The Toodledo API v3 requires an OAuth2 access token. You can obtain one by registering an application in your Toodledo developer console.*
 
 ## Recommended Alternatives
 
@@ -49,6 +38,7 @@ If you wish to fork and extend this tool, you could adapt the API modules to use
 
 ### Todo List Alternatives
 
+- **[Google Tasks API](https://developers.google.com/tasks):** A lightweight API that integrates seamlessly with Google Workspace.
 - **[Todoist Developer API](https://developer.todoist.com/):** A very popular and well-documented REST API for todo lists.
 - **[Microsoft To Do / Microsoft Graph](https://learn.microsoft.com/en-us/graph/api/resources/todo-overview):** Powerful enterprise and personal task management API.
 

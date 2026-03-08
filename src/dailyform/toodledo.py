@@ -1,29 +1,21 @@
-from configparser import ConfigParser
 from pprint import pprint
 
 import requests
 
-config = ConfigParser()
-# Safely read config without failing if it doesn't exist
-config.read(["dailyform.cfg"])
+from .config import config
 
-try:
-    access_token = config.get("toodledo", "access_token")
-except Exception:
-    access_token = None
 
 def get_todos():
-    """
-    Fetches uncompleted tasks from Toodledo using API v3.
-    """
+    """Fetch uncompleted tasks from Toodledo using API v3."""
+    access_token = config.toodledo_access_token
     if not access_token:
-        print("Error: Toodledo access_token not configured in dailyform.cfg")
+        print("Error: Toodledo access_token not configured")
         return []
 
     url = "https://api.toodledo.com/3/tasks/get.php"
     params = {
         "access_token": access_token,
-        "comp": 0 # Only get uncompleted tasks
+        "comp": 0,  # Only get uncompleted tasks
     }
 
     try:

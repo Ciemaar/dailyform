@@ -2,8 +2,7 @@ __pycache__/
 *.pyc
 *.pkl
 oldfacts.db
-dailyform.cfg
-src/dailyform/secrets.py
+.env
 .tox/
 .pytest_cache/
 .ruff_cache/

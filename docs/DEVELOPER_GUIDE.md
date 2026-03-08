@@ -8,8 +8,8 @@ The project has been modernized to use a standard Python `src`-layout:
 
 - `src/dailyform/`: Contains the main package code.
   - `form.py`, `form2.py`: The core form generation logic and mixins.
-  - `toodledo.py`: Interaction with the legacy Toodledo API.
-  - `weather.py`: Interaction with the Weather Underground API.
+  - `toodledo.py`: Interaction with the Toodledo API v3.
+  - `weather.py`: Interaction with the OpenWeatherMap API.
   - `secrets.py.example`: Example file for required API keys.
 - `tests/`: Contains the `pytest` test suite.
 - `pyproject.toml`: Project metadata, dependencies, and tooling configuration.

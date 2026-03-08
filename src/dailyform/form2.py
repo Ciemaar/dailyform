@@ -59,7 +59,7 @@ class BaseForm(Mapping):
         return self.state >= FORMATTED and not self.isCorrupt
 
     def __getitem__(self, key):
-        """BaseForm can be used as a dictionary, in which case it will search all three internal dicts"""
+        """BaseForm can be used as a dictionary, in which case it will search all three internal dicts."""
         return self.formatted_strings.get(key, self.analysis.get(key, self.facts[key]))
 
     def __iter__(self):

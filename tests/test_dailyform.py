@@ -1,29 +1,9 @@
 import os
-import sys
 import unittest
-from unittest.mock import MagicMock, patch
 from datetime import date
+from unittest.mock import patch
 
-# Mock modules before importing dailyform
-sys.modules["dailyform.secrets"] = MagicMock()
-sys.modules["dailyform.secrets"].OWM_API_KEY = "TEST_API_KEY"
-
-# Mock toodledo to avoid import errors
-mock_toodledo = MagicMock()
-mock_toodledo.get_todos.return_value = [{"title": "Mock Todo"}]
-sys.modules["dailyform.toodledo"] = mock_toodledo
-
-# Mock weather
-mock_weather = MagicMock()
-mock_weather.get_weather_forecast.return_value = {
-    date.today(): {
-        "low": {"fahrenheit": 32},
-        "conditions": "Cloudy"
-    }
-}
-sys.modules["dailyform.weather"] = mock_weather
-
-from dailyform.form import DailyForm  # noqa: E402
+from dailyform.form import DailyForm
 
 
 class TestDailyForm(unittest.TestCase):
@@ -38,7 +18,17 @@ class TestDailyForm(unittest.TestCase):
             except OSError:
                 pass
 
-    def test_daily_form_output(self):
+    @patch("dailyform.form.get_weather_forecast")
+    @patch("dailyform.form.get_todos")
+    def test_daily_form_output(self, mock_get_todos, mock_get_weather):
+        mock_get_weather.return_value = {
+            date.today(): {
+                "low": {"fahrenheit": 32},
+                "conditions": "Cloudy"
+            }
+        }
+        mock_get_todos.return_value = [{"title": "Mock Todo"}]
+
         # Test case 1: Forced weather failure
         dt = DailyForm("Andy")
         dt.fail_weather = True
@@ -46,7 +36,6 @@ class TestDailyForm(unittest.TestCase):
         dt.prepare()  # Second prepare calls analyze/format implicitly or explicitly
         output = dt.render_text()
         self.assertIn("DailyForm for Andy", output)
-        del dt
 
         # Test case 2: Valid zip code
         dt = DailyForm("Andy")
@@ -55,7 +44,6 @@ class TestDailyForm(unittest.TestCase):
         dt.prepare()
         output = dt.render_text()
         self.assertIn("DailyForm for Andy", output)
-        del dt
 
         # Test case 3: Default behavior
         dt = DailyForm("Andy")
@@ -63,16 +51,6 @@ class TestDailyForm(unittest.TestCase):
         dt.prepare()
         output = dt.render_text()
         self.assertIn("DailyForm for Andy", output)
-        del dt
-
-        # Test case 4: Forced weather failure again
-        dt = DailyForm("Andy")
-        dt.fail_weather = True
-        dt.prepare()
-        dt.prepare()
-        output = dt.render_text()
-        self.assertIn("DailyForm for Andy", output)
-        del dt
 
 
 if __name__ == "__main__":

@@ -1,32 +1,17 @@
 import json
-import sys
 import unittest
 from datetime import date
 from unittest.mock import MagicMock, patch
-import importlib
 
-if "dailyform.weather" in sys.modules:
-    del sys.modules["dailyform.weather"]
-
-# Mock secrets
-sys.modules["dailyform.secrets"] = MagicMock()
-sys.modules["dailyform.secrets"].OWM_API_KEY = "TEST_API_KEY"
-
-# Mock urllib and urllib.request
-mock_urllib = MagicMock()
-mock_urllib_request = MagicMock()
-mock_urllib.request = mock_urllib_request
-sys.modules["urllib"] = mock_urllib
-sys.modules["urllib.request"] = mock_urllib_request
-
-from dailyform import weather  # noqa: E402
+from dailyform import weather
 
 
 class TestWeather(unittest.TestCase):
-    def setUp(self):
-        importlib.reload(weather)
+    @patch("dailyform.weather.config")
+    @patch("dailyform.weather.urllib.request.urlopen")
+    def test_get_weather_forecast(self, mock_urlopen, mock_config):
+        mock_config.owm_api_key = "TEST_API_KEY"
 
-    def test_get_weather_forecast(self):
         mock_response = MagicMock()
         mock_json = {
             "list": [
@@ -49,9 +34,9 @@ class TestWeather(unittest.TestCase):
         }
         mock_response.read.return_value = json.dumps(mock_json).encode("utf-8")
 
-        # Make the context manager work (with ...)
+        # Make the context manager work
         mock_response.__enter__.return_value = mock_response
-        weather.urllib.request.urlopen.return_value = mock_response
+        mock_urlopen.return_value = mock_response
 
         forecasts = weather.get_weather_forecast("10001")
 

@@ -62,7 +62,7 @@ class BaseForm(Mapping):
         return self.state >= FORMATTED and not self.isCorrupt
 
     def __getitem__(self, key):
-        """BaseForm can be used as a dictionary, in which case it will search all three internal dicts"""
+        """BaseForm can be used as a dictionary, in which case it will search all three internal dicts."""
         return self.formatted_strings.get(
             key, self.analysis.get(key, self.facts.get(key, self.defaults.get(key, None)))
         )
@@ -149,10 +149,9 @@ class TodoMixin(UserForm):
         self.fail_todo = False
 
     def prepare(self, partial=False):
-        """
+        """Prepare the form.
 
-        :param partial:
-        :return:
+        :param partial: Whether this is a partial preparation.
         """
         if "username" not in self.facts:
             return super(TodoMixin, self).prepare(True)

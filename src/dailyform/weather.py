@@ -2,15 +2,20 @@ import json
 import urllib.request
 from datetime import date
 
-from .secrets import OWM_API_KEY
+from .config import config
 
 
 def get_weather_forecast(zip_code):
-    """
-    Fetches the 5-day / 3-hour forecast from OpenWeatherMap for a given US zip code.
+    """Fetch the 5-day / 3-hour forecast from OpenWeatherMap for a given US zip code.
+
     Groups the forecast by day and returns the minimum temperature and general conditions.
     """
-    url = f"http://api.openweathermap.org/data/2.5/forecast?zip={zip_code},us&units=imperial&appid={OWM_API_KEY}"
+    api_key = config.owm_api_key
+    if not api_key:
+        print("Error: OpenWeatherMap API key not configured")
+        return {}
+
+    url = f"http://api.openweathermap.org/data/2.5/forecast?zip={zip_code},us&units=imperial&appid={api_key}"
 
     req = urllib.request.Request(url)
     try:

@@ -33,7 +33,7 @@ jobs:
         mdformat --check .
     - name: Prepare secrets for type checking
       run: |
-        cp src/dailyform/secrets.py.example src/dailyform/secrets.py
+        cp .env.example .env
     - name: Type check with pyright
       run: |
         pyright .
