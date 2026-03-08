@@ -1,3 +1,5 @@
+"""Client integration with Toodledo API."""
+
 from pprint import pprint
 
 import requests

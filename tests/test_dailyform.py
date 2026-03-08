@@ -1,3 +1,5 @@
+"""Tests for the dailyform forms."""
+
 import os
 import unittest
 from datetime import date
@@ -7,11 +9,15 @@ from dailyform.form import DailyForm
 
 
 class TestDailyForm(unittest.TestCase):
+    """Test suite for the DailyForm class."""
+
     def setUp(self):
+        """Set up the test environment."""
         if os.path.exists("oldfacts.db"):
             os.remove("oldfacts.db")
 
     def tearDown(self):
+        """Clean up the test environment."""
         if os.path.exists("oldfacts.db"):
             try:
                 os.remove("oldfacts.db")
@@ -21,6 +27,7 @@ class TestDailyForm(unittest.TestCase):
     @patch("dailyform.form.get_weather_forecast")
     @patch("dailyform.form.get_todos")
     def test_daily_form_output(self, mock_get_todos, mock_get_weather):
+        """Test the output of the DailyForm under various conditions."""
         mock_get_weather.return_value = {
             date.today(): {
                 "low": {"fahrenheit": 32},

@@ -1,3 +1,5 @@
+"""Alternative core form logic for dailyform."""
+
 import os
 from collections.abc import Mapping
 from datetime import date
@@ -14,6 +16,8 @@ CORRUPT = 70
 
 
 class BaseForm(Mapping):
+    """Base class for all forms."""
+
     def __init__(self, form_type, form_id, form_date):
         self.form_type = form_type
         self.form_id = form_id
@@ -27,35 +31,45 @@ class BaseForm(Mapping):
         self.defaults = {}
 
     def prepare(self, partial=False):
+        """Prepare the form.
+
+        :param partial: Whether this is a partial preparation.
+        """
         if partial:
             self.state = PARTIAL_PREP
         else:
             self.state = PREPARED
 
     def analyze(self):
+        """Analyze the prepared form."""
         if not self.isPrepared:
             self.prepare()
         self.state = ANALYZED
 
     def format(self):
+        """Format the form output."""
         if not self.isAnalyzed:
-            self.analyze
+            self.analyze()
         self.state = FORMATTED
 
     @property
     def isCorrupt(self):
+        """Return True if form is corrupt."""
         return self.state >= CORRUPT
 
     @property
     def isPrepared(self):
+        """Return True if form is prepared."""
         return self.state >= PREPARED and not self.isCorrupt
 
     @property
     def isAnalyzed(self):
+        """Return True if form is analyzed."""
         return self.state >= ANALYZED and not self.isCorrupt
 
     @property
     def isFormatted(self):
+        """Return True if form is formatted."""
         return self.state >= FORMATTED and not self.isCorrupt
 
     def __getitem__(self, key):
@@ -71,12 +85,15 @@ class BaseForm(Mapping):
 
 
 class WeatherMixin(BaseForm):
+    """Mixin to add weather data to a form."""
+
     def __init__(self, *args, **kwargs):
         super(WeatherMixin, self).__init__(*args, **kwargs)
         self.defaults["weather"] = "Partly Cloudy"
         self.fail_weather = False
 
     def prepare(self, partial=False):
+        """Prepare weather data."""
         if getattr(self, "fail_weather", None):
             self.failures["weather"] = "Forced Failure on weather"
             super(WeatherMixin, self).prepare(partial=True)
@@ -85,12 +102,15 @@ class WeatherMixin(BaseForm):
 
 
 class TodoMixin(BaseForm):
+    """Mixin to add to-do list data to a form."""
+
     def __init__(self, *args, **kwargs):
         super(TodoMixin, self).__init__(*args, **kwargs)
         self.defaults["todos"] = ["Revise todo list"]
         self.fail_todo = False
 
     def prepare(self, partial=False):
+        """Prepare to-do list data."""
         if getattr(self, "fail_todo", False):
             self.failures["todos"] = "Forced Failure on todos"
             super(TodoMixin, self).prepare(partial=True)
@@ -99,11 +119,14 @@ class TodoMixin(BaseForm):
 
 
 class MakoForm(BaseForm):
+    """Form that renders using Mako templates."""
+
     def __init__(self, form_type, form_id, form_date, filename):
         super(MakoForm, self).__init__(form_type, form_id, form_date)
         self.template = Template(filename)
 
     def render_html(self):
+        """Render the form as HTML."""
         if not self.isFormatted:
             self.format()
         ret = self.template.render_context(self)
@@ -112,11 +135,14 @@ class MakoForm(BaseForm):
 
 
 class TextForm(BaseForm):
+    """Form that renders using standard string formatting."""
+
     def __init__(self, form_type, form_id, form_date, template):
         super(TextForm, self).__init__(form_type, form_id, form_date)
         self.template = template
 
     def render_text(self):
+        """Render the form as plain text."""
         if not self.isFormatted:
             self.format()
         ret = self.template.format(**self)
@@ -125,6 +151,8 @@ class TextForm(BaseForm):
 
 
 class DailyForm(TextForm, WeatherMixin, TodoMixin):
+    """A daily checklist form combining weather and tasks."""
+
     template = """
   {form_type} for {form_id}
   =================================

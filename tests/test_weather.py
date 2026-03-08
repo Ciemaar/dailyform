@@ -1,3 +1,5 @@
+"""Tests for the weather module."""
+
 import json
 import unittest
 from datetime import date
@@ -7,9 +9,12 @@ from dailyform import weather
 
 
 class TestWeather(unittest.TestCase):
+    """Test suite for the weather module."""
+
     @patch("dailyform.weather.config")
     @patch("dailyform.weather.urllib.request.urlopen")
     def test_get_weather_forecast(self, mock_urlopen, mock_config):
+        """Test successfully fetching and parsing weather forecasts."""
         mock_config.owm_api_key = "TEST_API_KEY"
 
         mock_response = MagicMock()

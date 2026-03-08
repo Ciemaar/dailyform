@@ -31,13 +31,9 @@ target-version = "py313"
 [tool.ruff.lint]
 select = ["E", "F", "I", "D"]
 ignore = [
-    "D100", # Missing docstring in public module
-    "D101", # Missing docstring in public class
-    "D102", # Missing docstring in public method
-    "D103", # Missing docstring in public function
-    "D104", # Missing docstring in public package
-    "D105", # Missing docstring in magic method
-    "D107", # Missing docstring in __init__
+    "D105", # Missing docstring in magic method (often self-explanatory)
+    "D107", # Missing docstring in __init__ (documented in class docstring)
+    "D104", # Missing docstring in public package (__init__.py)
 ]
 
 [tool.pyright]

@@ -1,3 +1,5 @@
+"""Core form logic for dailyform."""
+
 import os
 import shelve
 from collections.abc import Mapping
@@ -18,6 +20,8 @@ CORRUPT = 70
 
 
 class BaseForm(Mapping):
+    """Base class for all forms."""
+
     def __init__(self, form_type, form_id, form_date):
         self.form_type = form_type
         self.form_id = form_id
@@ -30,35 +34,42 @@ class BaseForm(Mapping):
         self.defaults = {}
 
     def prepare(self, partial=False):
+        """Prepare the form for rendering."""
         if partial:
             self.state = PARTIAL_PREP
         else:
             self.state = PREPARED
 
     def analyze(self):
+        """Analyze the prepared form."""
         if not self.isPrepared:
             self.prepare()
         self.state = ANALYZED
 
     def format(self):
+        """Format the form output."""
         if not self.isAnalyzed:
             self.analyze
         self.state = FORMATTED
 
     @property
     def isCorrupt(self):
+        """Return True if form is corrupt."""
         return self.state >= CORRUPT
 
     @property
     def isPrepared(self):
+        """Return True if form is prepared."""
         return self.state >= PREPARED and not self.isCorrupt
 
     @property
     def isAnalyzed(self):
+        """Return True if form is analyzed."""
         return self.state >= ANALYZED and not self.isCorrupt
 
     @property
     def isFormatted(self):
+        """Return True if form is formatted."""
         return self.state >= FORMATTED and not self.isCorrupt
 
     def __getitem__(self, key):
@@ -85,6 +96,7 @@ class BaseForm(Mapping):
         )
 
     def __call__(self):
+        """Prepare, analyze, and format the form."""
         if not self.isPrepared:
             self.prepare()
         if not self.isAnalyzed:
@@ -94,32 +106,41 @@ class BaseForm(Mapping):
 
 
 class PlaceForm(BaseForm):
+    """Form that includes place information."""
+
     def prepare(self, partial=False):
+        """Prepare place information."""
         self.getPlaceInfo()  # will insert zip_code in facts
         super(PlaceForm, self).prepare(partial)
 
     def getPlaceInfo(self):
-        # self.facts['zip_code'] = ""
+        """Retrieve place info."""
         pass
 
 
 class UserForm(BaseForm):
+    """Form that includes user information."""
+
     def prepare(self, partial=False):
+        """Prepare user information."""
         self.getUserInfo()  # will insert username in facts
         super(UserForm, self).prepare(partial)
 
     def getUserInfo(self):
-        # self.facts['username'] = ""
+        """Retrieve user info."""
         pass
 
 
 class WeatherMixin(PlaceForm):
+    """Mixin to add weather data to a form."""
+
     def __init__(self, *args, **kwargs):
         super(WeatherMixin, self).__init__(*args, **kwargs)
         self.defaults["weather"] = "No weather"
         self.fail_weather = False
 
     def prepare(self, partial=False):
+        """Prepare weather data."""
         if "zip_code" not in self.facts:
             return super(WeatherMixin, self).prepare(True)
         if getattr(self, "fail_weather", False):
@@ -134,6 +155,7 @@ class WeatherMixin(PlaceForm):
         super(WeatherMixin, self).prepare(partial)
 
     def format(self):
+        """Format weather output string."""
         today = self.facts.get("weather", {}).get(date.today(), None)
         if today:
             self.formatted_strings["weather"] = "{low} degrees F {conditions}".format(
@@ -143,16 +165,15 @@ class WeatherMixin(PlaceForm):
 
 
 class TodoMixin(UserForm):
+    """Mixin to add to-do list data to a form."""
+
     def __init__(self, *args, **kwargs):
         super(TodoMixin, self).__init__(*args, **kwargs)
         self.defaults["todo"] = "No todo"
         self.fail_todo = False
 
     def prepare(self, partial=False):
-        """Prepare the form.
-
-        :param partial: Whether this is a partial preparation.
-        """
+        """Prepare to-do list data."""
         if "username" not in self.facts:
             return super(TodoMixin, self).prepare(True)
         if getattr(self, "fail_todo", False):
@@ -161,20 +182,27 @@ class TodoMixin(UserForm):
         super(TodoMixin, self).prepare(partial)
 
     def format(self):
+        """Format to-do output string."""
         todos = self.facts.get("todo", [])
         self.formatted_strings["todo"] = "\n".join(x["title"] for x in todos if "title" in x)
         super(TodoMixin, self).format()
 
 
 class SimpleUserPlaceMixin(UserForm, PlaceForm):
+    """Mixin for a simple hardcoded user and place."""
+
     def getPlaceInfo(self):
+        """Hardcode place info."""
         self.facts["zip_code"] = "10001"
 
     def getUserInfo(self):
+        """Hardcode user info."""
         self.facts["username"] = "Andy"
 
 
 class PersistFactsMixin(BaseForm):
+    """Mixin to persist form facts to a local database."""
+
     def __init__(self, *args, **kwargs):
         super(PersistFactsMixin, self).__init__(*args, **kwargs)
         self.shelf = shelve.open("oldfacts.db")
@@ -185,6 +213,7 @@ class PersistFactsMixin(BaseForm):
         self.shelf.close()
 
     def analyze(self):
+        """Analyze and restore persisted facts on failure."""
         if self.shelf_key not in self.shelf:
             return
         for errorKey in self.errors:
@@ -193,11 +222,14 @@ class PersistFactsMixin(BaseForm):
 
 
 class MakoForm(BaseForm):
+    """Form that renders using Mako templates."""
+
     def __init__(self, form_type, form_id, form_date, filename):
         super(MakoForm, self).__init__(form_type, form_id, form_date)
         self.template = Template(filename)
 
     def render_html(self):
+        """Render the form as HTML."""
         if not self.isFormatted:
             self()
         ret = self.template.render_context(self)
@@ -206,11 +238,14 @@ class MakoForm(BaseForm):
 
 
 class TextForm(BaseForm):
+    """Form that renders using standard string formatting."""
+
     def __init__(self, form_type, form_id, form_date, template):
         super(TextForm, self).__init__(form_type, form_id, form_date)
         self.template = template
 
     def render_text(self):
+        """Render the form as plain text."""
         if not self.isFormatted:
             self()
         ret = self.template.format(**self)
@@ -219,6 +254,8 @@ class TextForm(BaseForm):
 
 
 class DailyForm(TextForm, WeatherMixin, TodoMixin, SimpleUserPlaceMixin):  # , PersistFactsMixin):
+    """A daily checklist form combining weather and tasks."""
+
     def __init__(self, form_id, form_date=None):
         template = """
     {form_type} for {form_id}

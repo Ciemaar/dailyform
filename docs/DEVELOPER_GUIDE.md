@@ -10,7 +10,7 @@ The project has been modernized to use a standard Python `src`-layout:
   - `form.py`, `form2.py`: The core form generation logic and mixins.
   - `toodledo.py`: Interaction with the Toodledo API v3.
   - `weather.py`: Interaction with the OpenWeatherMap API.
-  - `secrets.py.example`: Example file for required API keys.
+  - `config.py`: Pydantic settings configuration.
 - `tests/`: Contains the `pytest` test suite.
 - `pyproject.toml`: Project metadata, dependencies, and tooling configuration.
 - `tox.ini`: Configuration for multi-environment testing.

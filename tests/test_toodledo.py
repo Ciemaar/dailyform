@@ -1,3 +1,5 @@
+"""Tests for the toodledo module."""
+
 import unittest
 from unittest.mock import MagicMock, patch
 
@@ -5,10 +7,12 @@ from dailyform import toodledo
 
 
 class TestToodledo(unittest.TestCase):
+    """Test suite for the toodledo module."""
 
     @patch("dailyform.toodledo.config")
     @patch("dailyform.toodledo.requests.get")
     def test_get_todos_success(self, mock_get, mock_config):
+        """Test successfully fetching todos."""
         mock_config.toodledo_access_token = "mock_token"
         mock_response = MagicMock()
         mock_response.json.return_value = [
@@ -26,6 +30,7 @@ class TestToodledo(unittest.TestCase):
     @patch("dailyform.toodledo.config")
     @patch("dailyform.toodledo.requests.get")
     def test_get_todos_empty(self, mock_get, mock_config):
+        """Test fetching todos when the list is empty."""
         mock_config.toodledo_access_token = "mock_token"
         mock_response = MagicMock()
         mock_response.json.return_value = [{"num": 0, "total": 0}]
@@ -36,6 +41,7 @@ class TestToodledo(unittest.TestCase):
 
     @patch("dailyform.toodledo.config")
     def test_get_todos_no_token(self, mock_config):
+        """Test fetching todos without an access token."""
         mock_config.toodledo_access_token = None
         todos = toodledo.get_todos()
         self.assertEqual(todos, [])

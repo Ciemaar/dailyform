@@ -1,7 +1,11 @@
+"""Configuration settings for dailyform."""
+
 from pydantic_settings import BaseSettings, SettingsConfigDict
 
 
 class Settings(BaseSettings):
+    """Pydantic model for application configuration."""
+
     toodledo_access_token: str | None = None
     owm_api_key: str | None = None
 

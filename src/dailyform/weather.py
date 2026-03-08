@@ -1,3 +1,5 @@
+"""Client integration with OpenWeatherMap API."""
+
 import json
 import urllib.request
 from datetime import date
