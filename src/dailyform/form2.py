@@ -63,11 +63,11 @@ class BaseForm(Mapping):
         return self.formatted_strings.get(key, self.analysis.get(key, self.facts[key]))
 
     def __iter__(self):
-        for key in set(list(self.formatted_strings.keys()) + list(self.analysis.keys()) + list(self.facts.keys())):
+        for key in set(self.formatted_strings.keys()) | set(self.analysis.keys()) | set(self.facts.keys()):
             yield key
 
     def __len__(self):
-        return len(set(list(self.formatted_strings.keys()) + list(self.analysis.keys()) + list(self.facts.keys())))
+        return len(set(self.formatted_strings.keys()) | set(self.analysis.keys()) | set(self.facts.keys()))
 
 
 class WeatherMixin(BaseForm):

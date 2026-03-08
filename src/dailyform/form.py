@@ -70,22 +70,20 @@ class BaseForm(Mapping):
         )
 
     def __iter__(self):
-        for key in set(
-            list(self.formatted_strings.keys())
-            + list(self.analysis.keys())
-            + list(self.facts.keys())
-            + list(self.defaults.keys())
+        for key in (
+            set(self.formatted_strings.keys())
+            | set(self.analysis.keys())
+            | set(self.facts.keys())
+            | set(self.defaults.keys())
         ):
             yield key
 
     def __len__(self):
         return len(
-            set(
-                list(self.formatted_strings.keys())
-                + list(self.analysis.keys())
-                + list(self.facts.keys())
-                + list(self.defaults.keys())
-            )
+            set(self.formatted_strings.keys())
+            | set(self.analysis.keys())
+            | set(self.facts.keys())
+            | set(self.defaults.keys())
         )
 
     def __call__(self):

@@ -33,6 +33,14 @@ class TestToodledo(unittest.TestCase):
         toodledo.userpw = "test_pw"
         toodledo.email = "test@example.com"
 
+    def tearDown(self):
+        import os
+        if os.path.exists("session.pkl"):
+            try:
+                os.remove("session.pkl")
+            except OSError:
+                pass
+
     def test_make_sig(self):
         # Test make_sig
         # toodledo.apptoken is reset in setUp to "test_token"

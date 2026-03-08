@@ -11,7 +11,7 @@ authors = [
     {name = "Andy Fundinger", email = "Andy@ciemaar.com"},
 ]
 license = {text = "Pending"}
-requires-python = ">=3.13"
+requires-python = ">=3.10"
 dependencies = [
     "requests",
     "mako",

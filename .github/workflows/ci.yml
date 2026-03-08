@@ -31,6 +31,9 @@ jobs:
     - name: Format Markdown with mdformat
       run: |
         mdformat --check .
+    - name: Prepare secrets for type checking
+      run: |
+        cp src/dailyform/secrets.py.example src/dailyform/secrets.py
     - name: Type check with pyright
       run: |
         pyright .
