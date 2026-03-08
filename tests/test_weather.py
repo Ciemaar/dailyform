@@ -2,63 +2,73 @@ import json
 import sys
 import unittest
 from datetime import date
-from unittest.mock import MagicMock
+from unittest.mock import MagicMock, patch
+import importlib
 
-# Mock modules before importing dailyform
+if "dailyform.weather" in sys.modules:
+    del sys.modules["dailyform.weather"]
+
+# Mock secrets
 sys.modules["dailyform.secrets"] = MagicMock()
-sys.modules["dailyform.secrets"].WU_API_KEY = "TEST_API_KEY"
+sys.modules["dailyform.secrets"].OWM_API_KEY = "TEST_API_KEY"
 
-# Mock urllib.request
+# Mock urllib and urllib.request
 mock_urllib = MagicMock()
 mock_urllib_request = MagicMock()
 mock_urllib.request = mock_urllib_request
-
-# Prepare mock response structure
-mock_response = MagicMock()
-mock_json = {
-    "forecast": {
-        "simpleforecast": {
-            "forecastday": [
-                {"date": {"day": 1, "month": 1, "year": 2023}, "low": {"fahrenheit": 32}, "conditions": "Snow"},
-                {"date": {"day": 2, "month": 1, "year": 2023}, "low": {"fahrenheit": 30}, "conditions": "Sunny"},
-            ]
-        }
-    }
-}
-mock_response.read.return_value = json.dumps(mock_json).encode("utf-8")
-mock_urllib_request.urlopen.return_value = mock_response
-
-# Inject mocks
 sys.modules["urllib"] = mock_urllib
 sys.modules["urllib.request"] = mock_urllib_request
 
-# Import the module under test
 from dailyform import weather  # noqa: E402
 
 
 class TestWeather(unittest.TestCase):
-    def test_weather_logic(self):
-        # The logic has already run on import because weather.py is a script.
-        # But we can verify it ran correctly if we could inspect what it printed.
-        # Since we can't easily, we will just re-verify the logic using the mock we set up.
+    def setUp(self):
+        importlib.reload(weather)
 
-        # Simulating what the script does
-        f = weather.urllib.request.urlopen("http://fakeurl")
-        json_string = f.read()
-        parsed_json = json.loads(json_string)
+    def test_get_weather_forecast(self):
+        mock_response = MagicMock()
+        mock_json = {
+            "list": [
+                {
+                    "dt_txt": "2023-01-01 12:00:00",
+                    "main": {"temp_min": 32.5},
+                    "weather": [{"main": "Clouds"}],
+                },
+                {
+                    "dt_txt": "2023-01-01 15:00:00",
+                    "main": {"temp_min": 28.0},  # Lower temp on same day
+                    "weather": [{"main": "Snow"}],
+                },
+                {
+                    "dt_txt": "2023-01-02 12:00:00",
+                    "main": {"temp_min": 45.0},
+                    "weather": [{"main": "Clear"}],
+                },
+            ]
+        }
+        mock_response.read.return_value = json.dumps(mock_json).encode("utf-8")
 
-        forecasts = []
-        for forecast in parsed_json["forecast"]["simpleforecast"]["forecastday"]:
-            d = date(day=forecast["date"]["day"], month=forecast["date"]["month"], year=forecast["date"]["year"])
-            s = "{low} degrees F {conditions}".format(
-                low=forecast["low"]["fahrenheit"], conditions=forecast["conditions"]
-            )
-            forecasts.append((d, s))
+        # Make the context manager work (with ...)
+        mock_response.__enter__.return_value = mock_response
+        weather.urllib.request.urlopen.return_value = mock_response
+
+        forecasts = weather.get_weather_forecast("10001")
 
         self.assertEqual(len(forecasts), 2)
-        self.assertEqual(forecasts[0][1], "32 degrees F Snow")
-        self.assertEqual(forecasts[1][1], "30 degrees F Sunny")
-        f.close()
+
+        day1 = date(2023, 1, 1)
+        day2 = date(2023, 1, 2)
+
+        self.assertIn(day1, forecasts)
+        self.assertIn(day2, forecasts)
+
+        # It should record the lowest temp (28.0) but might keep the first condition encountered (Clouds)
+        self.assertEqual(forecasts[day1]["low"]["fahrenheit"], 28.0)
+        self.assertEqual(forecasts[day1]["conditions"], "Clouds")
+
+        self.assertEqual(forecasts[day2]["low"]["fahrenheit"], 45.0)
+        self.assertEqual(forecasts[day2]["conditions"], "Clear")
 
 
 if __name__ == "__main__":

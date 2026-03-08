@@ -1,23 +1,27 @@
 import os
 import sys
 import unittest
-from unittest.mock import MagicMock
+from unittest.mock import MagicMock, patch
+from datetime import date
 
 # Mock modules before importing dailyform
 sys.modules["dailyform.secrets"] = MagicMock()
-sys.modules["dailyform.secrets"].WU_API_KEY = "TEST_API_KEY"
-
-# Mock urllib.request
-mock_urllib = MagicMock()
-mock_urllib_request = MagicMock()
-mock_urllib.request = mock_urllib_request
-sys.modules["urllib"] = mock_urllib
-sys.modules["urllib.request"] = mock_urllib_request
+sys.modules["dailyform.secrets"].OWM_API_KEY = "TEST_API_KEY"
 
 # Mock toodledo to avoid import errors
 mock_toodledo = MagicMock()
 mock_toodledo.get_todos.return_value = [{"title": "Mock Todo"}]
 sys.modules["dailyform.toodledo"] = mock_toodledo
+
+# Mock weather
+mock_weather = MagicMock()
+mock_weather.get_weather_forecast.return_value = {
+    date.today(): {
+        "low": {"fahrenheit": 32},
+        "conditions": "Cloudy"
+    }
+}
+sys.modules["dailyform.weather"] = mock_weather
 
 from dailyform.form import DailyForm  # noqa: E402
 
@@ -35,28 +39,6 @@ class TestDailyForm(unittest.TestCase):
                 pass
 
     def test_daily_form_output(self):
-        # Configure mock weather response
-        mock_response = MagicMock()
-        mock_response.read.return_value = b"""
-        {
-            "forecast": {
-                "simpleforecast": {
-                    "forecastday": [
-                        {
-                            "date": {"day": 1, "month": 1, "year": 2023},
-                            "low": {"fahrenheit": 32},
-                            "conditions": "Cloudy"
-                        }
-                    ]
-                }
-            }
-        }
-        """
-
-        # We need to set the return value on the imported module's urllib.request.urlopen
-        # Since we mocked sys.modules['urllib.request'], dailyform.form.urllib.request refers to that mock
-        mock_urllib_request.urlopen.return_value = mock_response
-
         # Test case 1: Forced weather failure
         dt = DailyForm("Andy")
         dt.fail_weather = True

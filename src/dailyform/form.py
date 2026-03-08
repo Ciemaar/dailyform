@@ -1,14 +1,12 @@
-import json
 import os
 import shelve
-import urllib.request
 from collections.abc import Mapping
 from datetime import date
 
 from mako.template import Template
 
-from .secrets import WU_API_KEY
 from .toodledo import get_todos
+from .weather import get_weather_forecast
 
 NEW = 10
 PARTIAL_PREP = 20
@@ -128,19 +126,11 @@ class WeatherMixin(PlaceForm):
             self.errors["weather"] = "Unable to retrieve"
             return super(WeatherMixin, self).prepare(True)
 
-        f = urllib.request.urlopen(
-            "http://api.wunderground.com/api/{API_KEY}/geolookup/forecast10day/q/{zip_code}.json".format(
-                API_KEY=WU_API_KEY, **self
-            )
-        )
-        json_string = f.read()
-        parsed_json = json.loads(json_string)
-        self.facts["weather"] = {}
-        for forecast in parsed_json["forecast"]["simpleforecast"]["forecastday"]:
-            self.facts["weather"][
-                date(day=forecast["date"]["day"], month=forecast["date"]["month"], year=forecast["date"]["year"])
-            ] = forecast
-        f.close()
+        zip_code = self.facts.get("zip_code", "10001")
+        daily_forecasts = get_weather_forecast(zip_code)
+
+        self.facts["weather"] = daily_forecasts
+
         super(WeatherMixin, self).prepare(partial)
 
     def format(self):

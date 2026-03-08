@@ -1,23 +1,19 @@
-import hashlib
 import json
 import sys
 import unittest
-from unittest.mock import MagicMock
+from unittest.mock import MagicMock, patch
+import importlib
 
-# Ensure clean mocks
+# Clean up any mocks left over from other tests
 if "dailyform.toodledo" in sys.modules:
     del sys.modules["dailyform.toodledo"]
 
-# Mock requests before import
-mock_requests = MagicMock()
-# Mock response for module-level calls
-mock_response = MagicMock()
-mock_response.text = json.dumps({"userid": "12345", "token": "mock_token"})
-mock_requests.get.return_value = mock_response
-sys.modules["requests"] = mock_requests
+# Mock requests
+sys.modules["requests"] = MagicMock()
 
+# Mock configparser to return a mock value for access_token
 mock_config = MagicMock()
-mock_config.get.return_value = "mock_value"
+mock_config.get.side_effect = lambda section, key: "mock_token" if key == "access_token" else MagicMock()
 sys.modules["configparser"] = MagicMock()
 sys.modules["configparser"].ConfigParser.return_value = mock_config
 
@@ -26,42 +22,36 @@ from dailyform import toodledo  # noqa: E402
 
 class TestToodledo(unittest.TestCase):
     def setUp(self):
-        # We don't need to reload because we set up mocks correctly before import
-        # Reset session values if needed
-        toodledo.session = {"appid": "test_appid"}
-        toodledo.apptoken = "test_token"
-        toodledo.userpw = "test_pw"
-        toodledo.email = "test@example.com"
+        # We need to reload toodledo to make sure it doesn't use the mock from test_dailyform.py
+        importlib.reload(toodledo)
+        toodledo.access_token = "mock_token"
 
-    def tearDown(self):
-        import os
-        if os.path.exists("session.pkl"):
-            try:
-                os.remove("session.pkl")
-            except OSError:
-                pass
-
-    def test_make_sig(self):
-        # Test make_sig
-        # toodledo.apptoken is reset in setUp to "test_token"
-        # "test" + "test_token" = "testtest_token"
-        sig = toodledo.make_sig("test")
-
-        expected_sig = hashlib.md5("testtest_token".encode("utf-8")).hexdigest()
-        self.assertEqual(sig, expected_sig)
-
-    def test_get_todos(self):
-        # Setup specific mock for get_todos call
-        mock_todos_response = MagicMock()
-        mock_todos_response.text = json.dumps([{"title": "Task 1"}, {"title": "Task 2"}])
-
-        # We need to update the mock on the imported module
-        toodledo.requests.get.return_value = mock_todos_response
-
-        toodledo.session["key"] = "test_key"
+    def test_get_todos_success(self):
+        mock_response = MagicMock()
+        mock_response.json.return_value = [
+            {"num": 2, "total": 2},
+            {"id": 1234, "title": "Task 1"},
+            {"id": 5678, "title": "Task 2"},
+        ]
+        toodledo.requests.get.return_value = mock_response
 
         todos = toodledo.get_todos()
-        self.assertEqual(todos, [{"title": "Task 1"}, {"title": "Task 2"}])
+        self.assertEqual(len(todos), 2)
+        self.assertEqual(todos[0]["title"], "Task 1")
+        self.assertEqual(todos[1]["title"], "Task 2")
+
+    def test_get_todos_empty(self):
+        mock_response = MagicMock()
+        mock_response.json.return_value = [{"num": 0, "total": 0}]
+        toodledo.requests.get.return_value = mock_response
+
+        todos = toodledo.get_todos()
+        self.assertEqual(todos, [])
+
+    def test_get_todos_no_token(self):
+        toodledo.access_token = None
+        todos = toodledo.get_todos()
+        self.assertEqual(todos, [])
 
 
 if __name__ == "__main__":

@@ -85,22 +85,18 @@ mdformat .
 mdformat --check .
 ```
 
-## Legacy API Constraints
+## External APIs
 
-### Legacy API Endpoints
+The codebase integrates with modern, fully supported APIs:
 
-⚠️ **Warning: The APIs this codebase targets are largely defunct.** ⚠️
+### 1. Toodledo API v3
 
-As part of modernizing this codebase, it is highly recommended to replace the API integration layers (`toodledo.py` and `weather.py`) with modern alternatives (e.g., OpenWeatherMap, Todoist, or Toodledo v3). The current implementations exist primarily as a historical migration reference.
+The `toodledo.py` module fetches incomplete tasks via the modern Toodledo API v3 (`https://api.toodledo.com/3/tasks/get.php`). Authentication relies on an OAuth2 `access_token` read from the configuration file.
 
-### Toodledo API v2 & MD5
+### 2. OpenWeatherMap API
 
-The `toodledo.py` module interacts with an older, deprecated version of the Toodledo API (v2) which strictly required the use of the **MD5** hashing algorithm for generating authentication signatures and keys.
+The `weather.py` module uses the OpenWeatherMap 5-Day / 3-Hour Forecast API to retrieve data, parsing the JSON chunks to compute daily low temperatures and generic weather conditions.
 
-Because MD5 is considered cryptographically insecure, security linters (like Bandit or Codacy) flag its usage. To address this while maintaining structural compatibility with the legacy API, we use `usedforsecurity=False` in the `hashlib.md5()` calls:
+### Legacy Context
 
-```python
-hashlib.md5(..., usedforsecurity=False)
-```
-
-This explicitly signals that the algorithm is being used for non-security purposes (legacy API compatibility), preventing it from blocking execution in FIPS-compliant environments and silencing some security warnings. **Do not replace MD5 with a more secure algorithm like SHA-256 unless the Toodledo API endpoint is updated to support it.**
+*Historically, this project used Weather Underground and Toodledo API v2 (which required MD5 hashing for signatures). Those dependencies have been stripped and fully modernized.*

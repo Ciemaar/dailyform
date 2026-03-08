@@ -16,57 +16,39 @@ pip install .
 
 ## Configuration
 
-⚠️ **WARNING: Deprecated APIs** ⚠️
+DailyForm requires access to a couple of external APIs: OpenWeatherMap and Toodledo API v3. You must provide your API credentials for these services to work.
 
-DailyForm was originally built to integrate with the **Weather Underground API** and the **Toodledo API v2**.
-
-- **Weather Underground** discontinued its free public API around 2018 (after acquisition by IBM). You can no longer get a new, free API key that works with the `/geolookup/forecast10day` endpoint used in this code.
-- **Toodledo API v2** is a severely outdated legacy API (Toodledo moved to v3 and OAuth2 years ago).
-
-While the codebase has been modernized to run on Python 3, **these integrations will likely fail** unless you possess grandfathered or enterprise access to these specific legacy endpoints.
-
-If you are modifying this project for modern use, you will need to replace the API calls.
-
-### Legacy Configuration (For Reference Only)
-
-If you have legacy credentials, you can configure them as follows.
-
-#### 1. Toodledo Credentials
+### 1. Toodledo Configuration
 
 Create a file named `dailyform.cfg` in the directory from which you will run DailyForm. It must have the following structure:
 
 ```ini
 [toodledo]
-id = YOUR_TOODLEDO_APP_ID
-token = YOUR_TOODLEDO_APP_TOKEN
-username = YOUR_TOODLEDO_EMAIL
-password = YOUR_TOODLEDO_PASSWORD
+access_token = YOUR_TOODLEDO_API_V3_ACCESS_TOKEN
 ```
 
-*Note: DailyForm uses the legacy Toodledo API v2, which requires these credentials for authentication.*
+*Note: The Toodledo API v3 requires an OAuth2 access token. You can obtain one by registering an application in your Toodledo developer console.*
 
-#### 2. Weather Underground API Key
+### 2. OpenWeatherMap API Key
 
 Create a file named `secrets.py` inside the `src/dailyform/` directory (or ensure it's accessible in your Python path under the `dailyform` package) with your API key:
 
 ```python
 # src/dailyform/secrets.py
-WU_API_KEY = "YOUR_WUNDERGROUND_API_KEY"
+OWM_API_KEY = "YOUR_OPENWEATHERMAP_API_KEY"
 ```
 
-## Recommended Modern Alternatives
+## Recommended Alternatives
 
-If you are a developer looking to adapt this tool, consider migrating to these modern, supported APIs:
+If you wish to fork and extend this tool, you could adapt the API modules to use other alternatives:
 
 ### Weather Alternatives
 
-- **[OpenWeatherMap](https://openweathermap.org/api):** Offers a robust free tier for current weather and forecasts.
 - **[WeatherAPI](https://www.weatherapi.com/):** Another popular option with a generous free tier.
 - **[National Weather Service API (US Only)](https://www.weather.gov/documentation/services-web-api):** Completely free and requires no API key.
 
 ### Todo List Alternatives
 
-- **[Toodledo API v3](https://api.toodledo.com/3/):** The modern, supported version of Toodledo's API (uses OAuth2 instead of MD5 hashes).
 - **[Todoist Developer API](https://developer.todoist.com/):** A very popular and well-documented REST API for todo lists.
 - **[Microsoft To Do / Microsoft Graph](https://learn.microsoft.com/en-us/graph/api/resources/todo-overview):** Powerful enterprise and personal task management API.
 

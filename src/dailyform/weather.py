@@ -2,24 +2,52 @@ import json
 import urllib.request
 from datetime import date
 
-from .secrets import WU_API_KEY
+from .secrets import OWM_API_KEY
 
-zip_code = "10001"
 
-f = urllib.request.urlopen(
-    "http://api.wunderground.com/api/{API_KEY}/geolookup/forecast10day/q/{zip_code}.json".format(
-        zip_code=zip_code, API_KEY=WU_API_KEY
-    )
-)
+def get_weather_forecast(zip_code):
+    """
+    Fetches the 5-day / 3-hour forecast from OpenWeatherMap for a given US zip code.
+    Groups the forecast by day and returns the minimum temperature and general conditions.
+    """
+    url = f"http://api.openweathermap.org/data/2.5/forecast?zip={zip_code},us&units=imperial&appid={OWM_API_KEY}"
 
-json_string = f.read()
+    req = urllib.request.Request(url)
+    try:
+        with urllib.request.urlopen(req) as response:
+            json_string = response.read()
+            parsed_json = json.loads(json_string)
 
-parsed_json = json.loads(json_string)
+            daily_forecasts = {}
+            for item in parsed_json.get('list', []):
+                # OWM returns data in 3-hour chunks.
+                # dt_txt format: "YYYY-MM-DD HH:MM:SS"
+                date_str = item['dt_txt'].split(' ')[0]
+                y, m, d = map(int, date_str.split('-'))
+                forecast_date = date(year=y, month=m, day=d)
 
-for forecast in parsed_json["forecast"]["simpleforecast"]["forecastday"]:
-    print(
-        date(day=forecast["date"]["day"], month=forecast["date"]["month"], year=forecast["date"]["year"]),
-        "{low} degrees F {conditions}".format(low=forecast["low"]["fahrenheit"], conditions=forecast["conditions"]),
-        forecast,
-    )
-f.close()
+                temp = item['main']['temp_min']
+                condition = item['weather'][0]['main']
+
+                if forecast_date not in daily_forecasts:
+                    daily_forecasts[forecast_date] = {
+                        "low": {"fahrenheit": temp},
+                        "conditions": condition
+                    }
+                else:
+                    # Update to find the true daily low
+                    if temp < daily_forecasts[forecast_date]["low"]["fahrenheit"]:
+                        daily_forecasts[forecast_date]["low"]["fahrenheit"] = temp
+
+            return daily_forecasts
+    except Exception as e:
+        print(f"Error fetching weather: {e}")
+        return {}
+
+
+if __name__ == "__main__":
+    zip_code = '10001'
+    forecasts = get_weather_forecast(zip_code)
+    for forecast_date, forecast in sorted(forecasts.items()):
+        print(forecast_date, "{low} degrees F {conditions}".format(low=forecast['low']['fahrenheit'],
+                                                                   conditions=forecast['conditions']), forecast)
