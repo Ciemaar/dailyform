@@ -108,13 +108,15 @@ class MakoForm(BaseForm):
 
     def __init__(self, form_type, form_id, form_date, filename):
         super(MakoForm, self).__init__(form_type, form_id, form_date)
-        self.template = Template(filename)
+        self.template = Template(filename=filename)
 
     def render_html(self):
         """Render the form as HTML."""
         if not self.isFormatted:
             self.format()
-        ret = self.template.render_context(self)
+        # Mako's render_context expects a mako.runtime.Context.
+        # However, if we just want to render text using the template and kwargs:
+        ret = self.template.render(**{k: self[k] for k in self})
         self.state = RENDERED
         return ret
 

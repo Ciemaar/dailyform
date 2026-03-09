@@ -46,5 +46,15 @@ class TestToodledo(unittest.TestCase):
         todos = toodledo.get_todos()
         self.assertEqual(todos, [])
 
+    @patch("dailyform.toodledo.config")
+    @patch("dailyform.toodledo.requests.get")
+    def test_get_todos_exception(self, mock_get, mock_config):
+        """Test fetching todos when an exception occurs."""
+        mock_config.toodledo_access_token = "mock_token"
+        mock_get.side_effect = Exception("API Error")
+
+        todos = toodledo.get_todos()
+        self.assertEqual(todos, [])
+
 if __name__ == "__main__":
     unittest.main()

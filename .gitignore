@@ -6,3 +6,4 @@ oldfacts.db
 .tox/
 .pytest_cache/
 .ruff_cache/
+.coverage

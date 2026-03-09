@@ -43,10 +43,28 @@ typeCheckingMode = "basic"
 [project.optional-dependencies]
 dev = [
     "pytest",
+    "pytest-cov",
     "ruff",
     "pyright",
     "tox",
     "mdformat",
+]
+
+[tool.pytest.ini_options]
+addopts = "--cov=dailyform --cov-report=term-missing --cov-fail-under=100"
+testpaths = ["tests"]
+pythonpath = ["src"]
+
+[tool.coverage.run]
+omit = [
+    "src/dailyform/__init__.py",
+]
+
+[tool.coverage.report]
+exclude_lines = [
+    "pragma: no cover",
+    "if __name__ == .__main__.:",
+    "pass",
 ]
 
 [tool.mdformat]

@@ -60,6 +60,22 @@ class TestWeather(unittest.TestCase):
         self.assertEqual(forecasts[day2]["low"]["fahrenheit"], 45.0)
         self.assertEqual(forecasts[day2]["conditions"], "Clear")
 
+    @patch("dailyform.weather.config")
+    def test_get_weather_forecast_no_key(self, mock_config):
+        """Test fetching weather without an API key."""
+        mock_config.owm_api_key = None
+        forecasts = weather.get_weather_forecast("10001")
+        self.assertEqual(forecasts, {})
+
+    @patch("dailyform.weather.config")
+    @patch("dailyform.weather.urllib.request.urlopen")
+    def test_get_weather_forecast_exception(self, mock_urlopen, mock_config):
+        """Test fetching weather when an exception occurs."""
+        mock_config.owm_api_key = "TEST_API_KEY"
+        mock_urlopen.side_effect = Exception("API Error")
+
+        forecasts = weather.get_weather_forecast("10001")
+        self.assertEqual(forecasts, {})
 
 if __name__ == "__main__":
     unittest.main()

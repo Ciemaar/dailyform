@@ -116,10 +116,14 @@ class PersistFactsMixin(BaseForm):
         super(PersistFactsMixin, self).__init__(*args, **kwargs)
         self.shelf = shelve.open("oldfacts.db")
         self.shelf_key = repr((self.form_type, self.form_id))
+        self._closed = False
 
     def __del__(self):
+        if getattr(self, "_closed", True):
+            return
         self.shelf[self.shelf_key] = self.facts
         self.shelf.close()
+        self._closed = True
 
     def analyze(self):
         """Analyze and restore persisted facts on failure."""
