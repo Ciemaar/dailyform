@@ -1,4 +1,9 @@
-"""Core form logic for dailyform."""
+"""Core form logic for dailyform.
+
+This module provides the primary, "live" implementation of the forms.
+It actively integrates with external APIs (OpenWeatherMap for weather
+and Toodledo for tasks) to fetch real data when generating the form.
+"""
 
 import os
 import shelve

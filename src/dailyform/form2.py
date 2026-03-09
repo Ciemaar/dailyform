@@ -1,4 +1,11 @@
-"""Alternative core form logic for dailyform."""
+"""Alternative, offline core form logic for dailyform.
+
+This module provides a "dummy" or offline implementation of the forms.
+Instead of making external API calls, it uses hardcoded placeholder
+data for weather and tasks. It is useful for testing, demonstrations,
+or situations where network access is unavailable. It also introduces
+a distinct `failures` tracking mechanism not present in the live form.
+"""
 
 import os
 from datetime import date
