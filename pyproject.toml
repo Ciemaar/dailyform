@@ -65,3 +65,23 @@ exclude_lines = [
 
 [tool.mdformat]
 wrap = 80
+
+[tool.tox]
+legacy_tox_ini = """
+[tox]
+envlist = py310, py311, py312, py313
+isolated_build = True
+
+[testenv]
+deps =
+    pytest
+    pytest-cov
+    requests
+    mako
+    mdformat
+    pydantic-settings
+    pre-commit
+commands =
+    pytest tests/
+    mdformat --check README.md docs/ .github/
+"""

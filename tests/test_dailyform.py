@@ -80,10 +80,20 @@ class TestDailyForm(unittest.TestCase):
         # Second form reads from DB if there's an error
         form2 = TestPersistForm()
         form2.errors["weather"] = "failed"
+        form2.errors["fact_1"] = "failed2"
+        form2.errors["missing_fact"] = "failed3"
+
+        # Test case: shelf has key, but errorKey is NOT in shelf
+        # "missing_fact" is an error but not saved in shelf.
         form2.analyze()
 
         self.assertEqual(form2.facts["weather"], "sunny")
+        self.assertEqual(form2.facts["fact_1"], "val1")
+        self.assertNotIn("missing_fact", form2.facts)
         # Ensure we close properly
+        form2.__del__()
+
+        # And ensure that double __del__ does not crash
         form2.__del__()
 
     def test_persist_facts_mixin_no_key(self):
@@ -94,7 +104,29 @@ class TestDailyForm(unittest.TestCase):
                 super().__init__("NewType", "NewID", "2023-01-01")
 
         form = TestPersistForm()
-        form.analyze()  # Should return early since key isn't in shelf
+        form.prepare()
+
+        # In order to hit line 135 `super(PersistFactsMixin, self).analyze()`, we must not return early
+        # So we need to put the key in the shelf, but NOT have any errors, or have an error not in shelf.
+        form.shelf[form.shelf_key] = {}
+
+        form.analyze()
+        form.__del__()
+
+    def test_persist_facts_mixin_empty_shelf(self):
+        """Test PersistFactsMixin when key truly is not in shelf."""
+
+        class TestPersistForm(PersistFactsMixin):
+            def __init__(self):
+                super().__init__("NewType2", "NewID2", "2023-01-01")
+
+        form = TestPersistForm()
+        form.prepare()
+        # Ensure it's not in the shelf so we hit the `return` line
+        if form.shelf_key in form.shelf:
+            del form.shelf[form.shelf_key]
+
+        form.analyze()
         form.__del__()
 
     def test_place_form_missing_zip(self):

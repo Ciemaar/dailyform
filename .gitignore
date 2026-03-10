@@ -7,3 +7,5 @@ oldfacts.db
 .pytest_cache/
 .ruff_cache/
 .coverage
+*.egg-info/
+*.db

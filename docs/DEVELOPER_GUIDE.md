@@ -12,8 +12,7 @@ The project has been modernized to use a standard Python `src`-layout:
   - `weather.py`: Interaction with the OpenWeatherMap API.
   - `config.py`: Pydantic settings configuration.
 - `tests/`: Contains the `pytest` test suite.
-- `pyproject.toml`: Project metadata, dependencies, and tooling configuration.
-- `tox.ini`: Configuration for multi-environment testing.
+- `pyproject.toml`: Project metadata, dependencies, and all tooling configuration (including tox, pytest, and ruff).
 - `.github/workflows/ci.yml`: GitHub Actions CI pipeline.
 
 ## Setting Up the Development Environment

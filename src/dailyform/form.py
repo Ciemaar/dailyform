@@ -136,6 +136,7 @@ class PersistFactsMixin(BaseForm):
         for errorKey in self.errors:
             if errorKey in self.shelf[self.shelf_key]:
                 self.facts[errorKey] = self.shelf[self.shelf_key][errorKey]
+        super(PersistFactsMixin, self).analyze()
 
 
 class DailyForm(TextForm, WeatherMixin, TodoMixin, SimpleUserPlaceMixin):  # , PersistFactsMixin):
