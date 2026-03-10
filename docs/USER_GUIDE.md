@@ -85,5 +85,5 @@ Task 2
 
 ## Troubleshooting
 
-- **ConfigParser.NoSectionError**: Ensure `dailyform.cfg` exists in your working directory and has the `[toodledo]` section.
-- **ImportError: cannot import name 'WU_API_KEY'**: Ensure `src/dailyform/secrets.py` exists and contains the `WU_API_KEY` variable.
+- **ValidationError (pydantic)**: This occurs if required environment variables are missing. Ensure your `.env` file exists in the directory from which you run the script, and that both `TOODLEDO_ACCESS_TOKEN` and `OWM_API_KEY` are defined.
+- **Missing Data**: If the weather or todo list outputs "Unable to retrieve", double-check that your API tokens are correct and active.

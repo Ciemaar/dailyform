@@ -103,9 +103,9 @@ class TestMakoForm(unittest.TestCase):
     def test_base_form_corrupt(self):
         """Test the corrupt state property."""
         form = BaseForm("Test", "1", "2023-01-01")
-        from dailyform.base import CORRUPT
+        from dailyform.base import FormState
 
-        form.state = CORRUPT
+        form.state = FormState.CORRUPT
         self.assertTrue(form.isCorrupt)
         self.assertFalse(form.isPrepared)
         self.assertFalse(form.isAnalyzed)
