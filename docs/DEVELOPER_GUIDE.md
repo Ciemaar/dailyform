@@ -48,9 +48,9 @@ To run tests across multiple Python versions (3.10, 3.11, 3.12, 3.13), use `tox`
 tox
 ```
 
-### Note on Legacy Code Testing
+### Testing Approach
 
-The `toodledo.py` and `weather.py` modules execute code at the module level (e.g., making API requests immediately upon import). To make these testable, the test files (`tests/test_*.py`) mock the relevant standard library and third-party modules (`requests`, `urllib.request`, `configparser`) in `sys.modules` *before* importing the `dailyform` modules.
+The modernized `toodledo.py` and `weather.py` modules encapsulate API calls within functions (`get_todos`, `get_weather_forecast`). We test these functions via standard `@patch` mocking of `requests` and `urllib.request` to simulate API responses.
 
 ## Code Quality
 

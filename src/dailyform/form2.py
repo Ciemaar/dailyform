@@ -17,6 +17,7 @@ class WeatherMixin(BaseForm):
     """Mixin to add weather data to a form."""
 
     def __init__(self, *args, **kwargs):
+        """Initialize the WeatherMixin."""
         super(WeatherMixin, self).__init__(*args, **kwargs)
         self.defaults["weather"] = "Partly Cloudy"
         self.fail_weather = False
@@ -34,6 +35,7 @@ class TodoMixin(BaseForm):
     """Mixin to add to-do list data to a form."""
 
     def __init__(self, *args, **kwargs):
+        """Initialize the TodoMixin."""
         super(TodoMixin, self).__init__(*args, **kwargs)
         self.defaults["todos"] = ["Revise todo list"]
         self.fail_todo = False
@@ -58,6 +60,7 @@ class DailyForm(TextForm, WeatherMixin, TodoMixin):
   """
 
     def __init__(self, form_id, form_date=None):
+        """Initialize the DailyForm dummy."""
         if form_date is None:
             form_date = date.today()
         super(DailyForm, self).__init__(self.__class__.__name__, form_id, form_date, self.template)

@@ -30,11 +30,6 @@ target-version = "py313"
 
 [tool.ruff.lint]
 select = ["E", "F", "I", "D"]
-ignore = [
-    "D105", # Missing docstring in magic method (often self-explanatory)
-    "D107", # Missing docstring in __init__ (documented in class docstring)
-    "D104", # Missing docstring in public package (__init__.py)
-]
 
 [tool.pyright]
 include = ["src"]

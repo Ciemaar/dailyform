@@ -44,6 +44,7 @@ class WeatherMixin(PlaceForm):
     """Mixin to add weather data to a form."""
 
     def __init__(self, *args, **kwargs):
+        """Initialize the WeatherMixin."""
         super(WeatherMixin, self).__init__(*args, **kwargs)
         self.defaults["weather"] = "No weather"
         self.fail_weather = False
@@ -77,6 +78,7 @@ class TodoMixin(UserForm):
     """Mixin to add to-do list data to a form."""
 
     def __init__(self, *args, **kwargs):
+        """Initialize the TodoMixin."""
         super(TodoMixin, self).__init__(*args, **kwargs)
         self.defaults["todo"] = "No todo"
         self.fail_todo = False
@@ -113,12 +115,14 @@ class PersistFactsMixin(BaseForm):
     """Mixin to persist form facts to a local database."""
 
     def __init__(self, *args, **kwargs):
+        """Initialize the PersistFactsMixin and open shelf."""
         super(PersistFactsMixin, self).__init__(*args, **kwargs)
         self.shelf = shelve.open("oldfacts.db")
         self.shelf_key = repr((self.form_type, self.form_id))
         self._closed = False
 
     def __del__(self):
+        """Close the shelf on deletion."""
         if getattr(self, "_closed", True):
             return
         self.shelf[self.shelf_key] = self.facts
@@ -138,6 +142,7 @@ class DailyForm(TextForm, WeatherMixin, TodoMixin, SimpleUserPlaceMixin):  # , P
     """A daily checklist form combining weather and tasks."""
 
     def __init__(self, form_id, form_date=None):
+        """Initialize the DailyForm with a preset template."""
         template = """
     {form_type} for {form_id}
     ==========================

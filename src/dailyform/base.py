@@ -22,6 +22,7 @@ class BaseForm(Mapping):
     """Base class for all forms."""
 
     def __init__(self, form_type, form_id, form_date):
+        """Initialize the base form properties."""
         self.form_type = form_type
         self.form_id = form_id
         self.form_date = form_date
@@ -82,6 +83,7 @@ class BaseForm(Mapping):
         )
 
     def __iter__(self):
+        """Iterate over the keys of the form dictionary."""
         for key in (
             set(self.formatted_strings.keys())
             | set(self.analysis.keys())
@@ -91,6 +93,7 @@ class BaseForm(Mapping):
             yield key
 
     def __len__(self):
+        """Return the total number of unique keys in the form."""
         return len(
             set(self.formatted_strings.keys())
             | set(self.analysis.keys())
@@ -112,6 +115,7 @@ class MakoForm(BaseForm):
     """Form that renders using Mako templates."""
 
     def __init__(self, form_type, form_id, form_date, filename):
+        """Initialize the MakoForm with a template file."""
         super(MakoForm, self).__init__(form_type, form_id, form_date)
         self.template = Template(filename=filename)
 
@@ -130,6 +134,7 @@ class TextForm(BaseForm):
     """Form that renders using standard string formatting."""
 
     def __init__(self, form_type, form_id, form_date, template):
+        """Initialize the TextForm with a template string."""
         super(TextForm, self).__init__(form_type, form_id, form_date)
         self.template = template
 
