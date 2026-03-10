@@ -56,5 +56,6 @@ class TestToodledo(unittest.TestCase):
         todos = toodledo.get_todos()
         self.assertEqual(todos, [])
 
+
 if __name__ == "__main__":
     unittest.main()

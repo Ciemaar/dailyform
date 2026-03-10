@@ -26,6 +26,12 @@ The project has been modernized to use a standard Python `src`-layout:
 pip install -e .[dev]
 ```
 
+4. Install the pre-commit hooks:
+
+```bash
+pre-commit install
+```
+
 ## Testing
 
 We use `pytest` for running tests. The tests are designed to run without needing real API credentials or network access by heavily mocking external dependencies (`requests`, `urllib`).

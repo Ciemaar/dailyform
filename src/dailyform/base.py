@@ -25,7 +25,7 @@ class BaseForm(Mapping):
         self.analysis = {}
         self.formatted_strings = {}
         self.errors = {}
-        self.failures = {} # Exists in form2, harmless to add to base
+        self.failures = {}  # Exists in form2, harmless to add to base
         self.defaults = {}
 
     def prepare(self, partial=False):

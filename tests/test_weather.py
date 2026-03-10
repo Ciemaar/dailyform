@@ -77,5 +77,6 @@ class TestWeather(unittest.TestCase):
         forecasts = weather.get_weather_forecast("10001")
         self.assertEqual(forecasts, {})
 
+
 if __name__ == "__main__":
     unittest.main()

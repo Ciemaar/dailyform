@@ -26,21 +26,18 @@ def get_weather_forecast(zip_code):
             parsed_json = json.loads(json_string)
 
             daily_forecasts = {}
-            for item in parsed_json.get('list', []):
+            for item in parsed_json.get("list", []):
                 # OWM returns data in 3-hour chunks.
                 # dt_txt format: "YYYY-MM-DD HH:MM:SS"
-                date_str = item['dt_txt'].split(' ')[0]
-                y, m, d = map(int, date_str.split('-'))
+                date_str = item["dt_txt"].split(" ")[0]
+                y, m, d = map(int, date_str.split("-"))
                 forecast_date = date(year=y, month=m, day=d)
 
-                temp = item['main']['temp_min']
-                condition = item['weather'][0]['main']
+                temp = item["main"]["temp_min"]
+                condition = item["weather"][0]["main"]
 
                 if forecast_date not in daily_forecasts:
-                    daily_forecasts[forecast_date] = {
-                        "low": {"fahrenheit": temp},
-                        "conditions": condition
-                    }
+                    daily_forecasts[forecast_date] = {"low": {"fahrenheit": temp}, "conditions": condition}
                 else:
                     # Update to find the true daily low
                     if temp < daily_forecasts[forecast_date]["low"]["fahrenheit"]:
@@ -53,8 +50,11 @@ def get_weather_forecast(zip_code):
 
 
 if __name__ == "__main__":
-    zip_code = '10001'
+    zip_code = "10001"
     forecasts = get_weather_forecast(zip_code)
     for forecast_date, forecast in sorted(forecasts.items()):
-        print(forecast_date, "{low} degrees F {conditions}".format(low=forecast['low']['fahrenheit'],
-                                                                   conditions=forecast['conditions']), forecast)
+        print(
+            forecast_date,
+            "{low} degrees F {conditions}".format(low=forecast["low"]["fahrenheit"], conditions=forecast["conditions"]),
+            forecast,
+        )

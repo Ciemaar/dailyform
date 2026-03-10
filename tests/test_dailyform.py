@@ -28,12 +28,7 @@ class TestDailyForm(unittest.TestCase):
     @patch("dailyform.form.get_todos")
     def test_daily_form_output(self, mock_get_todos, mock_get_weather):
         """Test the output of the DailyForm under various conditions."""
-        mock_get_weather.return_value = {
-            date.today(): {
-                "low": {"fahrenheit": 32},
-                "conditions": "Cloudy"
-            }
-        }
+        mock_get_weather.return_value = {date.today(): {"low": {"fahrenheit": 32}, "conditions": "Cloudy"}}
         mock_get_todos.return_value = [{"title": "Mock Todo"}]
 
         # Test case 1: Forced weather failure
@@ -63,13 +58,14 @@ class TestDailyForm(unittest.TestCase):
 
         # Test case 4: Forced todo failure
         dt = DailyForm("Andy")
-        dt.facts["username"] = "Andy" # Ensure username is set so it doesn't return early
+        dt.facts["username"] = "Andy"  # Ensure username is set so it doesn't return early
         dt.fail_todo = True
         dt.prepare()
         self.assertEqual(dt.errors.get("todo"), "Unable to retrieve")
 
     def test_persist_facts_mixin(self):
         """Test the PersistFactsMixin analysis."""
+
         class TestPersistForm(PersistFactsMixin):
             def __init__(self):
                 super().__init__("TestType", "TestID", "2023-01-01")
@@ -92,16 +88,18 @@ class TestDailyForm(unittest.TestCase):
 
     def test_persist_facts_mixin_no_key(self):
         """Test PersistFactsMixin when key is not in shelf."""
+
         class TestPersistForm(PersistFactsMixin):
             def __init__(self):
                 super().__init__("NewType", "NewID", "2023-01-01")
 
         form = TestPersistForm()
-        form.analyze() # Should return early since key isn't in shelf
+        form.analyze()  # Should return early since key isn't in shelf
         form.__del__()
 
     def test_place_form_missing_zip(self):
         """Test WeatherMixin handles missing zip code gracefully."""
+
         # Using a mock form class that inherits WeatherMixin but does NOT set zip_code in facts
         class MockPlaceForm(WeatherMixin):
             def __init__(self):
@@ -115,10 +113,12 @@ class TestDailyForm(unittest.TestCase):
         # Missing zip code leads to partial prep True returned by WeatherMixin,
         # so state should be PARTIAL_PREP
         from dailyform.base import PARTIAL_PREP
+
         self.assertEqual(form.state, PARTIAL_PREP)
 
     def test_user_form_missing_user(self):
         """Test TodoMixin handles missing username gracefully."""
+
         class MockUserForm(TodoMixin):
             def __init__(self):
                 super().__init__("TestType", "TestID", "2023-01-01")
@@ -130,7 +130,9 @@ class TestDailyForm(unittest.TestCase):
         form.prepare()
         # Missing username leads to partial prep
         from dailyform.base import PARTIAL_PREP
+
         self.assertEqual(form.state, PARTIAL_PREP)
+
 
 if __name__ == "__main__":
     unittest.main()

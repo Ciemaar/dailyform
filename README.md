@@ -6,6 +6,7 @@ A rough start at a system for printing a personal, daily checklist. This legacy 
 
 - **[User Guide](docs/USER_GUIDE.md)**: Instructions on how to install, configure, and use DailyForm to generate checklists.
 - **[Developer Guide](docs/DEVELOPER_GUIDE.md)**: Information on project architecture, testing, code quality tools, and contribution guidelines.
+- **[Tooling Evaluation](docs/TOOLING_EVALUATION.md)**: Notes and rationale on the selection of modern tools used in this project (`ruff`, `pyright`, etc.).
 
 ## Quick Start
 

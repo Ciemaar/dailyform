@@ -20,7 +20,7 @@ class TestBaseForm(unittest.TestCase):
 
         # Prepare
         form.prepare(partial=True)
-        self.assertFalse(form.isPrepared) # Partial is not fully prepared
+        self.assertFalse(form.isPrepared)  # Partial is not fully prepared
         form.prepare(partial=False)
         self.assertTrue(form.isPrepared)
 
@@ -75,6 +75,7 @@ class TestTextForm(unittest.TestCase):
         self.assertEqual(result, "Type: TestType")
         self.assertTrue(form.isFormatted)
 
+
 class TestMakoForm(unittest.TestCase):
     """Test suite for the MakoForm class."""
 
@@ -83,9 +84,8 @@ class TestMakoForm(unittest.TestCase):
         import os
         import tempfile
 
-
         # Create a temporary mako template
-        with tempfile.NamedTemporaryFile(mode='w', delete=False) as f:
+        with tempfile.NamedTemporaryFile(mode="w", delete=False) as f:
             f.write("Type: ${form_type}")
             temp_name = f.name
 
@@ -104,11 +104,13 @@ class TestMakoForm(unittest.TestCase):
         """Test the corrupt state property."""
         form = BaseForm("Test", "1", "2023-01-01")
         from dailyform.base import CORRUPT
+
         form.state = CORRUPT
         self.assertTrue(form.isCorrupt)
         self.assertFalse(form.isPrepared)
         self.assertFalse(form.isAnalyzed)
         self.assertFalse(form.isFormatted)
+
 
 if __name__ == "__main__":
     unittest.main()
