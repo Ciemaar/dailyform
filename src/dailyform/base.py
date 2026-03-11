@@ -19,10 +19,23 @@ class FormState(IntEnum):
 
 
 class BaseForm(Mapping):
-    """Base class for all forms."""
+    """Abstract base class that models a form as a dictionary-like state machine.
+
+    A form progresses through stages: NEW -> PREPARED -> ANALYZED -> FORMATTED.
+    It aggregates data across several internal dictionaries (defaults, facts,
+    analysis, formatted_strings) allowing template engines to access all context
+    transparently.
+    """
 
     def __init__(self, form_type, form_id, form_date):
-        """Initialize the base form properties."""
+        """Initialize the core form state and internal storage dictionaries.
+
+        Args:
+            form_type (str): The class name or type identifier of the form.
+            form_id (str): A unique identifier for the subject of the form (e.g., username).
+            form_date (datetime.date): The date the form applies to.
+
+        """
         self.form_type = form_type
         self.form_id = form_id
         self.form_date = form_date
@@ -35,9 +48,14 @@ class BaseForm(Mapping):
         self.defaults = {}
 
     def prepare(self, partial=False):
-        """Prepare the form.
+        """Transition the form into a prepared state, gathering initial facts.
 
-        :param partial: Whether this is a partial preparation.
+        Subclasses should override this to trigger API calls or data fetching.
+
+        Args:
+            partial (bool): If True, signifies that some data could not be
+                prepared due to missing prerequisites, halting the pipeline.
+
         """
         if partial:
             self.state = FormState.PARTIAL_PREP
@@ -45,13 +63,20 @@ class BaseForm(Mapping):
             self.state = FormState.PREPARED
 
     def analyze(self):
-        """Analyze the prepared form."""
+        """Process the facts gathered during the preparation stage.
+
+        This step is used to compute derived values, check for errors, or apply
+        business logic before formatting.
+        """
         if not self.isPrepared:
             self.prepare()
         self.state = FormState.ANALYZED
 
     def format(self):
-        """Format the form output."""
+        """Convert raw facts and analysis into human-readable strings.
+
+        Populates the `formatted_strings` dictionary for use by templates.
+        """
         if not self.isAnalyzed:
             self.analyze()
         self.state = FormState.FORMATTED
@@ -102,7 +127,11 @@ class BaseForm(Mapping):
         )
 
     def __call__(self):
-        """Prepare, analyze, and format the form."""
+        """Execute the full form lifecycle pipeline sequentially.
+
+        Ensures the form passes through preparation, analysis, and formatting
+        if those steps have not already been completed.
+        """
         if not self.isPrepared:
             self.prepare()
         if not self.isAnalyzed:
@@ -112,10 +141,18 @@ class BaseForm(Mapping):
 
 
 class MakoForm(BaseForm):
-    """Form that renders using Mako templates."""
+    """A form subclass that uses Mako templates for HTML generation."""
 
     def __init__(self, form_type, form_id, form_date, filename):
-        """Initialize the MakoForm with a template file."""
+        """Initialize the form and compile the Mako template from a file.
+
+        Args:
+            form_type (str): The class name or type identifier of the form.
+            form_id (str): A unique identifier for the subject of the form.
+            form_date (datetime.date): The date the form applies to.
+            filename (str): The path to the Mako template file.
+
+        """
         super(MakoForm, self).__init__(form_type, form_id, form_date)
         self.template = Template(filename=filename)
 
@@ -131,10 +168,18 @@ class MakoForm(BaseForm):
 
 
 class TextForm(BaseForm):
-    """Form that renders using standard string formatting."""
+    """A form subclass that renders output via standard Python string formatting."""
 
     def __init__(self, form_type, form_id, form_date, template):
-        """Initialize the TextForm with a template string."""
+        """Initialize the form with an inline formatting template.
+
+        Args:
+            form_type (str): The class name or type identifier of the form.
+            form_id (str): A unique identifier for the subject of the form.
+            form_date (datetime.date): The date the form applies to.
+            template (str): The string format template.
+
+        """
         super(TextForm, self).__init__(form_type, form_id, form_date)
         self.template = template
 

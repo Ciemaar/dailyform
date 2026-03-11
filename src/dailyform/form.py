@@ -15,42 +15,48 @@ from .weather import get_weather_forecast
 
 
 class PlaceForm(BaseForm):
-    """Form that includes place information."""
+    """Base mixin for forms requiring geographical location context."""
 
     def prepare(self, partial=False):
-        """Prepare place information."""
+        """Inject place data into the form facts before continuing the pipeline."""
         self.getPlaceInfo()  # will insert zip_code in facts
         super(PlaceForm, self).prepare(partial)
 
     def getPlaceInfo(self):
-        """Retrieve place info."""
+        """Retrieve and store place info (e.g. zip_code) into `self.facts`.
+
+        Must be implemented by concrete subclasses.
+        """
         pass
 
 
 class UserForm(BaseForm):
-    """Form that includes user information."""
+    """Base mixin for forms requiring user context."""
 
     def prepare(self, partial=False):
-        """Prepare user information."""
+        """Inject user data into the form facts before continuing the pipeline."""
         self.getUserInfo()  # will insert username in facts
         super(UserForm, self).prepare(partial)
 
     def getUserInfo(self):
-        """Retrieve user info."""
+        """Retrieve and store user info (e.g. username) into `self.facts`.
+
+        Must be implemented by concrete subclasses.
+        """
         pass
 
 
 class WeatherMixin(PlaceForm):
-    """Mixin to add weather data to a form."""
+    """Mixin that fetches live weather forecasts for the form's zip code."""
 
     def __init__(self, *args, **kwargs):
-        """Initialize the WeatherMixin."""
+        """Initialize defaults and failure state flags for the weather module."""
         super(WeatherMixin, self).__init__(*args, **kwargs)
         self.defaults["weather"] = "No weather"
         self.fail_weather = False
 
     def prepare(self, partial=False):
-        """Prepare weather data."""
+        """Fetch the 5-day forecast from OpenWeatherMap and store it in facts."""
         if "zip_code" not in self.facts:
             return super(WeatherMixin, self).prepare(True)
         if getattr(self, "fail_weather", False):
@@ -75,16 +81,16 @@ class WeatherMixin(PlaceForm):
 
 
 class TodoMixin(UserForm):
-    """Mixin to add to-do list data to a form."""
+    """Mixin that fetches live task lists from the Toodledo API."""
 
     def __init__(self, *args, **kwargs):
-        """Initialize the TodoMixin."""
+        """Initialize defaults and failure state flags for the to-do module."""
         super(TodoMixin, self).__init__(*args, **kwargs)
         self.defaults["todo"] = "No todo"
         self.fail_todo = False
 
     def prepare(self, partial=False):
-        """Prepare to-do list data."""
+        """Fetch uncompleted tasks from Toodledo and store them in facts."""
         if "username" not in self.facts:
             return super(TodoMixin, self).prepare(True)
         if getattr(self, "fail_todo", False):
@@ -100,29 +106,33 @@ class TodoMixin(UserForm):
 
 
 class SimpleUserPlaceMixin(UserForm, PlaceForm):
-    """Mixin for a simple hardcoded user and place."""
+    """Utility mixin that fulfills user and place dependencies with static data."""
 
     def getPlaceInfo(self):
-        """Hardcode place info."""
+        """Inject a static Manhattan zip code (10001) into facts."""
         self.facts["zip_code"] = "10001"
 
     def getUserInfo(self):
-        """Hardcode user info."""
+        """Inject a static username ('Andy') into facts."""
         self.facts["username"] = "Andy"
 
 
 class PersistFactsMixin(BaseForm):
-    """Mixin to persist form facts to a local database."""
+    """Mixin that caches successfully fetched facts to a local disk database.
+
+    This allows the form to degrade gracefully. If a subsequent fetch fails
+    (e.g. API is down), it can restore the last known good facts during analysis.
+    """
 
     def __init__(self, *args, **kwargs):
-        """Initialize the PersistFactsMixin and open shelf."""
+        """Open the local shelf database using the form's identity as a key."""
         super(PersistFactsMixin, self).__init__(*args, **kwargs)
         self.shelf = shelve.open("oldfacts.db")
         self.shelf_key = repr((self.form_type, self.form_id))
         self._closed = False
 
     def __del__(self):
-        """Close the shelf on deletion."""
+        """Save the current facts to the shelf database and safely close it."""
         if getattr(self, "_closed", True):
             return
         self.shelf[self.shelf_key] = self.facts
@@ -130,7 +140,7 @@ class PersistFactsMixin(BaseForm):
         self._closed = True
 
     def analyze(self):
-        """Analyze and restore persisted facts on failure."""
+        """Restore missing or failed facts from the persistent local cache."""
         if self.shelf_key not in self.shelf:
             return
         for errorKey in self.errors:
