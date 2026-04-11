@@ -1,0 +1,87 @@
+[build-system]
+requires = ["setuptools>=61.0", "wheel"]
+build-backend = "setuptools.build_meta"
+
+[project]
+name = "dailyform"
+version = "0.0.1"
+description = "A rough start at a system for printing a personal, daily checklist."
+readme = "README.md"
+authors = [
+    {name = "Andy Fundinger", email = "Andy@ciemaar.com"},
+]
+license = {text = "Pending"}
+requires-python = ">=3.13"
+dependencies = [
+    "requests",
+    "mako",
+    "pydantic-settings",
+]
+
+[project.urls]
+"Homepage" = "https://channel3b.wordpress.com/dailyform/"
+
+[tool.setuptools.packages.find]
+where = ["src"]
+
+[tool.ruff]
+line-length = 120
+target-version = "py313"
+
+[tool.ruff.lint]
+select = ["E", "F", "I", "D"]
+
+[tool.pyright]
+include = ["src"]
+typeCheckingMode = "basic"
+
+[project.optional-dependencies]
+dev = [
+    "pytest",
+    "pytest-cov",
+    "ruff",
+    "pyright",
+    "tox",
+    "mdformat",
+    "pre-commit",
+]
+
+[tool.pytest.ini_options]
+addopts = "--cov=dailyform --cov-report=term-missing --cov-fail-under=100"
+testpaths = ["tests"]
+pythonpath = ["src"]
+
+[tool.coverage.run]
+omit = [
+    "src/dailyform/__init__.py",
+]
+
+[tool.coverage.report]
+exclude_lines = [
+    "pragma: no cover",
+    "if __name__ == .__main__.:",
+    "pass",
+]
+
+[tool.mdformat]
+wrap = 80
+
+[tool.tox]
+legacy_tox_ini = """
+[tox]
+envlist = py313, py314
+isolated_build = True
+
+[testenv]
+deps =
+    pytest
+    pytest-cov
+    requests
+    mako
+    mdformat
+    pydantic-settings
+    pre-commit
+commands =
+    pytest tests/
+    mdformat --check README.md docs/ .github/
+"""
