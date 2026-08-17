@@ -10,7 +10,7 @@ readme = "README.md"
 authors = [
     {name = "Andy Fundinger", email = "Andy@ciemaar.com"},
 ]
-license = {text = "Pending"}
+license = {text = "GPL-3.0-or-later"}
 requires-python = ">=3.13"
 dependencies = [
     "requests",
