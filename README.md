@@ -24,7 +24,7 @@ pip install -e .[dev]
 
 ### Basic Usage
 
-Before running, ensure you have configured `dailyform.cfg` and `src/dailyform/secrets.py` as detailed in the [User Guide](docs/USER_GUIDE.md).
+Before running, ensure you have configured your environment variables (e.g. in a `.env` file) as detailed in the [User Guide](docs/USER_GUIDE.md).
 
 ```python
 from dailyform.form import DailyForm

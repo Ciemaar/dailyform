@@ -70,27 +70,27 @@ if __name__ == "__main__":
     if os.path.exists("oldfacts.db"):
         os.remove("oldfacts.db")
 
-    dt = DailyForm("Andy")
+    dt = DailyForm("TestUser")
     dt.fail_weather = True
     dt.prepare()
     dt.prepare()
     print(dt.render_text())
     del dt
 
-    dt = DailyForm("Andy")
+    dt = DailyForm("TestUser")
     dt.facts["zip_code"] = "10001"
     dt.prepare()
     dt.prepare()
     print(dt.render_text())
     del dt
 
-    dt = DailyForm("Andy")
+    dt = DailyForm("TestUser")
     dt.prepare()
     dt.prepare()
     print(dt.render_text())
     del dt
 
-    dt = DailyForm("Andy")
+    dt = DailyForm("TestUser")
     dt.fail_weather = True
     dt.prepare()
     dt.prepare()

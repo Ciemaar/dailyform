@@ -32,33 +32,33 @@ class TestDailyForm(unittest.TestCase):
         mock_get_todos.return_value = [{"title": "Mock Todo"}]
 
         # Test case 1: Forced weather failure
-        dt = DailyForm("Andy")
+        dt = DailyForm("TestUser")
         dt.fail_weather = True
         dt.prepare()
         dt.prepare()  # Second prepare calls analyze/format implicitly or explicitly
         output = dt.render_text()
-        self.assertIn("DailyForm for Andy", output)
+        self.assertIn("DailyForm for TestUser", output)
         self.assertEqual(dt.errors.get("weather"), "Unable to retrieve")
 
         # Test case 2: Valid zip code
-        dt = DailyForm("Andy")
+        dt = DailyForm("TestUser")
         dt.facts["zip_code"] = "10001"
         dt.prepare()
         dt.prepare()
         output = dt.render_text()
-        self.assertIn("DailyForm for Andy", output)
+        self.assertIn("DailyForm for TestUser", output)
         self.assertIn("32 degrees F Cloudy", output)
 
         # Test case 3: Default behavior
-        dt = DailyForm("Andy")
+        dt = DailyForm("TestUser")
         dt.prepare()
         dt.prepare()
         output = dt.render_text()
-        self.assertIn("DailyForm for Andy", output)
+        self.assertIn("DailyForm for TestUser", output)
 
         # Test case 4: Forced todo failure
-        dt = DailyForm("Andy")
-        dt.facts["username"] = "Andy"  # Ensure username is set so it doesn't return early
+        dt = DailyForm("TestUser")
+        dt.facts["username"] = "TestUser"  # Ensure username is set so it doesn't return early
         dt.fail_todo = True
         dt.prepare()
         self.assertEqual(dt.errors.get("todo"), "Unable to retrieve")
