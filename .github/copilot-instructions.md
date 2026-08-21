@@ -19,6 +19,11 @@
 - Write tests for all new functionality.
 - Ensure `secrets` are not committed to the repository (use `dailyform/secrets.py` only for local development or mocks).
 
+## Git Workflow
+
+- When working on an existing, previous branch (i.e., rebasing or merging), features must not be removed if they've been added to the main branch in the intermediate interval.
+- All the branches being merged in, as well as their matching PRs, must be referenced in the commit comments and any new PRs.
+
 ## Development
 
 1. **Install:** `pip install -e .`

@@ -2,6 +2,11 @@
 
 This guide provides information for developers who want to contribute to, test, or extend the DailyForm codebase.
 
+## Git Workflow
+
+- When working on an existing, previous branch (i.e., rebasing or merging), features must not be removed if they've been added to the main branch in the intermediate interval.
+- All the branches being merged in, as well as their matching PRs, must be referenced in the commit comments and any new PRs.
+
 ## Project Structure
 
 The project has been modernized to use a standard Python `src`-layout:
