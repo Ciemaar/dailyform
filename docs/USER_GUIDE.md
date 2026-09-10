@@ -4,7 +4,7 @@ Welcome to DailyForm! This tool helps you generate a personal, daily checklist b
 
 ## Prerequisites
 
-- Python 3.13 or higher.
+- Python 3.14 or higher.
 
 ## Installation
 

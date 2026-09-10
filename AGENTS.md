@@ -8,7 +8,7 @@ This repository contains specific guidelines and instructions for AI agents work
 * `pytest` is used for testing.
 * `ruff` is used for linting and formatting.
 * `pyright` is used for type checking.
-* The project requires Python 3.13+. Dependency installation commands like `pip install -e .[dev]` will fail on older Python versions (e.g., 3.12).
+* The project requires Python 3.14+. Dependency installation commands like `pip install -e .[dev]` will fail on older Python versions (e.g., 3.13).
 
 ## Configuration & Secrets
 * The project uses `.env` files parsed by `pydantic-settings` for configuration and secrets management.

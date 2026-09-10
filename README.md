@@ -1,6 +1,6 @@
 # DailyForm
 
-A rough start at a system for printing a personal, daily checklist. This legacy Python 2 codebase has been modernized to support Python 3.13+.
+A rough start at a system for printing a personal, daily checklist. This legacy Python 2 codebase has been modernized to support Python 3.14+.
 
 ## Documentation
 
