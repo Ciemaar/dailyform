@@ -82,6 +82,6 @@ deps =
     pydantic-settings
     pre-commit
 commands =
-    pytest tests/
+    python -m pytest tests/
     mdformat --check README.md docs/ .github/
 """
