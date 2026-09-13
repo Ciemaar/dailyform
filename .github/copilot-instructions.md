@@ -2,7 +2,7 @@
 
 ## Stack
 
-- **Language:** Python 3.13+
+- **Language:** Python 3.14+
 - **Build System:** `pyproject.toml` (Setuptools)
 - **Dependencies:** `requests`, `mako`
 - **Testing:** `pytest`
@@ -14,7 +14,7 @@
 
 - Follow PEP 8 guidelines (enforced by `ruff`).
 - Use `src`-layout for the package.
-- Ensure all code is compatible with Python 3.13+.
+- Ensure all code is compatible with Python 3.14+.
 - Use strict type hints where possible, aiming for `pyright` compliance.
 - Write tests for all new functionality.
 - Ensure `secrets` are not committed to the repository (use `dailyform/secrets.py` only for local development or mocks).

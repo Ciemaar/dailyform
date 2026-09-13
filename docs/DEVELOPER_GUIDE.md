@@ -46,7 +46,7 @@ To run the test suite:
 pytest tests/
 ```
 
-To run tests across multiple Python versions (3.10, 3.11, 3.12, 3.13), use `tox`:
+To run tests across multiple Python versions (3.14, 3.15), use `tox`:
 
 ```bash
 tox
