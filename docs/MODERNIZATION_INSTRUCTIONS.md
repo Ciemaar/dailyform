@@ -1,10 +1,10 @@
 # Modernization Instructions and Session History
 
-This document serves as a historical record of all the explicit instructions and directives provided by the user during the modernization of the DailyForm codebase. It outlines the journey from a legacy Python 2 script to a fully modernized Python 3.13+ package.
+This document serves as a historical record of all the explicit instructions and directives provided by the user during the modernization of the DailyForm codebase. It outlines the journey from a legacy Python 2 script to a fully modernized Python 3.14+ package.
 
 ## 1. Initial Modernization Mandate
 
-- **Goal:** Modernize a legacy Python 2 codebase to Python 3.13+ standards.
+- **Goal:** Modernize a legacy Python 2 codebase to Python 3.14+ standards.
 - **Project Restructuring:** Convert to a standard `src`-layout (`src/<package_name>`) and use `pyproject.toml` to manage build configuration, dependencies, and tool settings (replacing `setup.py`).
 - **Code Migration:** Convert all code from Python 2 to 3 (e.g., `print`, exception handling, dictionary iteration), update standard library imports (`urllib`, `http.client`), and ensure correct handling of bytes vs. str.
 - **Dependencies:** Update relevant libraries.
