@@ -19,7 +19,7 @@ This repository contains specific guidelines and instructions for AI agents work
 ## Git Workflow & Commits
 
 - All branches being merged and their matching PRs must be explicitly referenced in commit comments and any new PRs.
-- When rebasing or merging, features added to the main branch in the intermediate interval must not be removed.
+- When rebasing or merging, features added to the master branch in the intermediate interval must not be removed.
 
 ## Security & Privacy
 
