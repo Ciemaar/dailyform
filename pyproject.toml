@@ -39,6 +39,8 @@ typeCheckingMode = "basic"
 dev = [
     "pytest",
     "pytest-cov",
+    "pytest-mock",
+    "responses",
     "ruff",
     "pyright",
     "tox",
@@ -76,6 +78,8 @@ isolated_build = True
 deps =
     pytest
     pytest-cov
+    pytest-mock
+    responses
     requests
     mako
     mdformat
