@@ -1,9 +1,9 @@
 """Common base classes and constants for forms."""
 
-from collections.abc import Mapping
-from enum import IntEnum
+lazy from collections.abc import Mapping
+lazy from enum import IntEnum
 
-from mako.template import Template
+lazy from mako.template import Template
 
 
 class FormState(IntEnum):

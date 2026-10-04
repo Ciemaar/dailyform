@@ -1,9 +1,9 @@
 """Tests for the toodledo module."""
 
-import unittest
-from unittest.mock import MagicMock, patch
+lazy import unittest
+lazy from unittest.mock import MagicMock, patch
 
-from dailyform import toodledo
+lazy from dailyform import toodledo
 
 
 class TestToodledo(unittest.TestCase):

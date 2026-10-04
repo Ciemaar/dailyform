@@ -1,11 +1,11 @@
 """Tests for the weather module."""
 
-import json
-import unittest
-from datetime import date
-from unittest.mock import MagicMock, patch
+lazy import json
+lazy import unittest
+lazy from datetime import date
+lazy from unittest.mock import MagicMock, patch
 
-from dailyform import weather
+lazy from dailyform import weather
 
 
 class TestWeather(unittest.TestCase):

@@ -1,11 +1,11 @@
 """Tests for the dailyform forms."""
 
-import os
-import unittest
-from datetime import date
-from unittest.mock import patch
+lazy import os
+lazy import unittest
+lazy from datetime import date
+lazy from unittest.mock import patch
 
-from dailyform.form import DailyForm, PersistFactsMixin, TodoMixin, WeatherMixin
+lazy from dailyform.form import DailyForm, PersistFactsMixin, TodoMixin, WeatherMixin
 
 
 class TestDailyForm(unittest.TestCase):
@@ -144,6 +144,7 @@ class TestDailyForm(unittest.TestCase):
         form.prepare()
         # Missing zip code leads to partial prep True returned by WeatherMixin,
         # so state should be PARTIAL_PREP
+        # eager: SyntaxError: lazy import not allowed inside functions
         from dailyform.base import FormState
 
         self.assertEqual(form.state, FormState.PARTIAL_PREP)
@@ -161,6 +162,7 @@ class TestDailyForm(unittest.TestCase):
         form = MockUserForm()
         form.prepare()
         # Missing username leads to partial prep
+        # eager: SyntaxError: lazy import not allowed inside functions
         from dailyform.base import FormState
 
         self.assertEqual(form.state, FormState.PARTIAL_PREP)

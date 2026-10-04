@@ -1,9 +1,9 @@
 """Tests for the dummy form implementation."""
 
-import unittest
-from datetime import date
+lazy import unittest
+lazy from datetime import date
 
-from dailyform.form2 import DailyForm
+lazy from dailyform.form2 import DailyForm
 
 
 class TestDailyFormDummy(unittest.TestCase):
