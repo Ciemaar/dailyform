@@ -1,10 +1,10 @@
 """Client integration with Toodledo API."""
 
-from pprint import pprint
+lazy from pprint import pprint
 
-import requests
+lazy import requests
 
-from .config import config
+lazy from .config import config
 
 
 def get_todos():

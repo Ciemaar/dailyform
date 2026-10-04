@@ -1,8 +1,8 @@
 """Tests for the base classes."""
 
-import unittest
+lazy import unittest
 
-from dailyform.base import BaseForm, MakoForm, TextForm
+lazy from dailyform.base import BaseForm, MakoForm, TextForm
 
 
 class TestBaseForm(unittest.TestCase):
@@ -81,7 +81,9 @@ class TestMakoForm(unittest.TestCase):
 
     def test_mako_form_render(self):
         """Test rendering of MakoForm."""
+
         import os
+
         import tempfile
 
         # Create a temporary mako template
@@ -103,6 +105,7 @@ class TestMakoForm(unittest.TestCase):
     def test_base_form_corrupt(self):
         """Test the corrupt state property."""
         form = BaseForm("Test", "1", "2023-01-01")
+
         from dailyform.base import FormState
 
         form.state = FormState.CORRUPT

@@ -7,10 +7,10 @@ or situations where network access is unavailable. It also introduces
 a distinct `failures` tracking mechanism not present in the live form.
 """
 
-import os
-from datetime import date
+lazy import os
+lazy from datetime import date
 
-from .base import BaseForm, TextForm
+lazy from .base import BaseForm, TextForm
 
 
 class WeatherMixin(BaseForm):
