@@ -144,7 +144,6 @@ class TestDailyForm(unittest.TestCase):
         form.prepare()
         # Missing zip code leads to partial prep True returned by WeatherMixin,
         # so state should be PARTIAL_PREP
-
         from dailyform.base import FormState
 
         self.assertEqual(form.state, FormState.PARTIAL_PREP)
@@ -162,7 +161,6 @@ class TestDailyForm(unittest.TestCase):
         form = MockUserForm()
         form.prepare()
         # Missing username leads to partial prep
-
         from dailyform.base import FormState
 
         self.assertEqual(form.state, FormState.PARTIAL_PREP)
