@@ -1,8 +1,8 @@
 """Tests for the base classes."""
 
-import unittest
+lazy import unittest
 
-from dailyform.base import BaseForm, MakoForm, TextForm
+lazy from dailyform.base import BaseForm, MakoForm, TextForm
 
 
 class TestBaseForm(unittest.TestCase):

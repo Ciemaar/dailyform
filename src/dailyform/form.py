@@ -5,13 +5,13 @@ It actively integrates with external APIs (OpenWeatherMap for weather
 and Toodledo for tasks) to fetch real data when generating the form.
 """
 
-import os
-import shelve
-from datetime import date
+lazy import os
+lazy import shelve
+lazy from datetime import date
 
-from .base import BaseForm, TextForm
-from .toodledo import get_todos
-from .weather import get_weather_forecast
+lazy from .base import BaseForm, TextForm
+lazy from .toodledo import get_todos
+lazy from .weather import get_weather_forecast
 
 
 class PlaceForm(BaseForm):

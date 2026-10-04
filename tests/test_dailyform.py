@@ -1,11 +1,11 @@
 """Tests for the dailyform forms."""
 
-import os
-import unittest
-from datetime import date
-from unittest.mock import patch
+lazy import os
+lazy import unittest
+lazy from datetime import date
+lazy from unittest.mock import patch
 
-from dailyform.form import DailyForm, PersistFactsMixin, TodoMixin, WeatherMixin
+lazy from dailyform.form import DailyForm, PersistFactsMixin, TodoMixin, WeatherMixin
 
 
 class TestDailyForm(unittest.TestCase):

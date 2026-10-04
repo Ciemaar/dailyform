@@ -11,7 +11,7 @@ authors = [
     {name = "Andy Fundinger", email = "Andy@ciemaar.com"},
 ]
 license = {text = "GPL-3.0-or-later"}
-requires-python = ">=3.14"
+requires-python = ">=3.15"
 dependencies = [
     "requests",
     "mako",
@@ -26,7 +26,7 @@ where = ["src"]
 
 [tool.ruff]
 line-length = 120
-target-version = "py314"
+target-version = "py315"
 
 [tool.ruff.lint]
 select = ["E", "F", "I", "D"]
@@ -71,7 +71,7 @@ wrap = 80
 [tool.tox]
 legacy_tox_ini = """
 [tox]
-envlist = py314, py315
+envlist = py315
 isolated_build = True
 
 [testenv]
