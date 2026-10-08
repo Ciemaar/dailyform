@@ -1,15 +1,21 @@
 """Tests for the weather module."""
 
-import json
-import unittest
-from datetime import date
-from unittest.mock import MagicMock, patch
+lazy import json
+lazy import unittest
+lazy from datetime import date
+lazy from unittest.mock import MagicMock, patch
 
-from dailyform import weather
+lazy from dailyform import weather
 
 
 class TestWeather(unittest.TestCase):
     """Test suite for the weather module."""
+
+    def test_config_load(self):
+        """Test dailyform config loading side-effects explicitly due to mock.patch skipping reify."""
+        import dailyform.config
+
+        dailyform.config.config
 
     @patch("dailyform.weather.config")
     @patch("dailyform.weather.urllib.request.urlopen")

@@ -1,9 +1,10 @@
 """Client integration with OpenWeatherMap API."""
 
-import json
-import urllib.request
-from datetime import date
+lazy import json
+lazy import urllib.request
+lazy from datetime import date
 
+# eager: import side-effect (mock.patch through dict does not reify)
 from .config import config
 
 

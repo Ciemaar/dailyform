@@ -1,9 +1,10 @@
 """Client integration with Toodledo API."""
 
-from pprint import pprint
+lazy from pprint import pprint
 
-import requests
+lazy import requests
 
+# eager: import side-effect (mock.patch through dict does not reify)
 from .config import config
 
 
