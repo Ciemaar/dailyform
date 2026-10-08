@@ -9,6 +9,12 @@ lazy from dailyform import toodledo
 class TestToodledo(unittest.TestCase):
     """Test suite for the toodledo module."""
 
+    def test_config_load(self):
+        """Test dailyform config loading side-effects explicitly due to mock.patch skipping reify."""
+        import dailyform.config
+
+        dailyform.config.config
+
     @patch("dailyform.toodledo.config")
     @patch("dailyform.toodledo.requests.get")
     def test_get_todos_success(self, mock_get, mock_config):

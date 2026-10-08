@@ -9,4 +9,3 @@ oldfacts.db
 .coverage
 *.egg-info/
 *.db
-Python-3.15.0rc2/

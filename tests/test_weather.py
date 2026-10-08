@@ -11,6 +11,12 @@ lazy from dailyform import weather
 class TestWeather(unittest.TestCase):
     """Test suite for the weather module."""
 
+    def test_config_load(self):
+        """Test dailyform config loading side-effects explicitly due to mock.patch skipping reify."""
+        import dailyform.config
+
+        dailyform.config.config
+
     @patch("dailyform.weather.config")
     @patch("dailyform.weather.urllib.request.urlopen")
     def test_get_weather_forecast(self, mock_urlopen, mock_config):

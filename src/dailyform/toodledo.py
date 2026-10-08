@@ -4,7 +4,8 @@ lazy from pprint import pprint
 
 lazy import requests
 
-lazy from .config import config
+# eager: import side-effect (mock.patch through dict does not reify)
+from .config import config
 
 
 def get_todos():

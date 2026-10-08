@@ -27,7 +27,6 @@ class PlaceForm(BaseForm):
 
         Must be implemented by concrete subclasses.
         """
-        pass
 
 
 class UserForm(BaseForm):
@@ -43,7 +42,6 @@ class UserForm(BaseForm):
 
         Must be implemented by concrete subclasses.
         """
-        pass
 
 
 class WeatherMixin(PlaceForm):

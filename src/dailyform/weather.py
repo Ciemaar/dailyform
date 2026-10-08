@@ -4,7 +4,8 @@ lazy import json
 lazy import urllib.request
 lazy from datetime import date
 
-lazy from .config import config
+# eager: import side-effect (mock.patch through dict does not reify)
+from .config import config
 
 
 def get_weather_forecast(zip_code):

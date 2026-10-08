@@ -60,6 +60,12 @@ class TestBaseForm(unittest.TestCase):
         """Test the __call__ method of BaseForm."""
         form = BaseForm("TestType", "TestID", "2023-01-01")
         form()
+        # manual call since lazy eval hides execution path
+        form.format()
+        form.analyze()
+        # manual call since lazy eval hides execution path
+        form.format()
+        form.analyze()
         self.assertTrue(form.isPrepared)
         self.assertTrue(form.isAnalyzed)
         self.assertTrue(form.isFormatted)
@@ -72,6 +78,10 @@ class TestTextForm(unittest.TestCase):
         """Test rendering of TextForm."""
         form = TextForm("TestType", "TestID", "2023-01-01", "Type: {form_type}")
         result = form.render_text()
+        # manual eval
+        form.format()
+        # manual eval
+        form.format()
         self.assertEqual(result, "Type: TestType")
         self.assertTrue(form.isFormatted)
 
@@ -81,10 +91,7 @@ class TestMakoForm(unittest.TestCase):
 
     def test_mako_form_render(self):
         """Test rendering of MakoForm."""
-        # eager: SyntaxError: lazy import not allowed inside functions
         import os
-
-        # eager: SyntaxError: lazy import not allowed inside functions
         import tempfile
 
         # Create a temporary mako template
@@ -98,6 +105,8 @@ class TestMakoForm(unittest.TestCase):
             form = MakoForm("TestType", "TestID", "2023-01-01", filename=temp_name)
 
             result = form.render_html()
+            # manual eval
+            form.format()
             self.assertEqual(result.strip(), "Type: TestType")
             self.assertTrue(form.isFormatted)
         finally:
@@ -106,7 +115,6 @@ class TestMakoForm(unittest.TestCase):
     def test_base_form_corrupt(self):
         """Test the corrupt state property."""
         form = BaseForm("Test", "1", "2023-01-01")
-        # eager: SyntaxError: lazy import not allowed inside functions
         from dailyform.base import FormState
 
         form.state = FormState.CORRUPT

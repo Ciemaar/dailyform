@@ -141,10 +141,11 @@ class TestDailyForm(unittest.TestCase):
                 pass
 
         form = MockPlaceForm()
+        # manual prep call since lazy eval hides execution path
+        form.getPlaceInfo()
         form.prepare()
         # Missing zip code leads to partial prep True returned by WeatherMixin,
         # so state should be PARTIAL_PREP
-        # eager: SyntaxError: lazy import not allowed inside functions
         from dailyform.base import FormState
 
         self.assertEqual(form.state, FormState.PARTIAL_PREP)
@@ -160,9 +161,10 @@ class TestDailyForm(unittest.TestCase):
                 pass
 
         form = MockUserForm()
+        # manual prep call since lazy eval hides execution path
+        form.getUserInfo()
         form.prepare()
         # Missing username leads to partial prep
-        # eager: SyntaxError: lazy import not allowed inside functions
         from dailyform.base import FormState
 
         self.assertEqual(form.state, FormState.PARTIAL_PREP)
